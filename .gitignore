@@ -1,0 +1,29 @@
+# Dados sensíveis — NUNCA versionar
+*.env
+.env*
+credenciais*
+*credentials*
+*token*
+*secret*
+cnpj*
+
+# Dados de leads (PII)
+leads/
+*leads*.csv
+*leads*.xlsx
+planilha-leads*.xlsx
+
+# Exports brutos de plataforma
+exports/
+*.csv
+!05-templates/*.csv
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporários
+*.tmp
+*.bak
+~$*
