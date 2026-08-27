@@ -57,4 +57,21 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
 - Corretores definidos: ...
 -->
 
-_Nenhum registro ainda. O histórico de origem termina em 13/05/2026, na véspera da apresentação de estratégia._
+### [2026-08-27] Painel de corretores — aplicação criada neste repositório
+
+- **O que mudou:** o repositório deixa de ser só documentação e passa a hospedar a
+  aplicação do painel de corretores (`api/`, `lib/`, `public/`), réplica adaptada do
+  painel de rede da Elite Futevôlei, pronta para deploy na Vercel.
+- **De → para:** relatório manual → painel ao vivo por corretor (custo por lead,
+  régua 40/60, anúncios com prévia, leitura automática), acessível ao time da Bridge
+  por URL + código de acesso.
+- **Motivo:** o time precisa ver qual corretor performa melhor, a que custo e com
+  quais anúncios — a dinâmica de retenção de corretores que move o Carlos.
+- **Dados confirmados na conta real (`CA - Bridge Moinhos 01`):** 4 campanhas ativas
+  (Fittipaldi, Rafael Birk, Adriano, Sandra) + 5 pausadas de corretores que saíram
+  (Karoline, Camille, Ricardo Osorio, Daniela Alban) — o repo citava "4 corretores
+  pendentes", mas a operação já rodou com 8 no total.
+- **Decisão de régua:** CPL verde até R$ 40, amarelo 40–60, vermelho acima de 60
+  (definida pelo Manuel/Case nesta sessão; régua anterior não existia).
+
+_O histórico de origem termina em 13/05/2026, na véspera da apresentação de estratégia; o resultado daquela reunião segue sem registro._

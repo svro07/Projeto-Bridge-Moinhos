@@ -15,7 +15,8 @@ Cabeçalho: x-codigo  (ou ?c= para <img>)                      gate de acesso
 
 - `fechada` = última semana completa de segunda a domingo.
 - `14d` = últimos 14 dias fechados (padrão).
-- `mes` = mês corrente até ontem; `mesf` = último mês completo.
+- `mes` = mês corrente até ontem (exceção: no dia 1º não existe "ontem" dentro do mês,
+  então a janela é o próprio dia — dado parcial, marcado como tal); `mesf` = último mês completo.
 - Comparação automática: mesmo número de dias imediatamente anteriores ao período.
 - Fuso: America/Sao_Paulo (o fuso da conta de anúncios).
 - Espelhar as regras de `api/periodo.js` da Elite onde fizer sentido.

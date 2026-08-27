@@ -6,6 +6,38 @@ Este repositório concentra o contexto de negócio, a estratégia vigente, a ope
 
 ---
 
+## Painel de corretores (aplicação)
+
+Além da documentação, este repositório hospeda o **painel de corretores** — a
+aplicação web que mostra, por corretor, custo por lead, leads, anúncios com prévia
+e leitura automática do período, com dado ao vivo da conta `CA - Bridge Moinhos 01`.
+Mesma arquitetura do painel da Elite: funções serverless na Vercel, sem dependências.
+
+```
+api/       endpoints (corretores, preview, thumb)
+lib/       Graph API do Meta, roster, régua, leitura automática, mock
+public/    o painel em si (index.html) + fontes, logos e retratos
+dev.js     servidor local: `npm run dev` e abra http://localhost:3000
+```
+
+### Colocar no ar (Vercel, ~5 min)
+
+1. [vercel.com](https://vercel.com) → **Add New… → Project** → importe
+   `svro07/Projeto-Bridge-Moinhos`.
+2. Em **Environment Variables**, defina:
+   - `META_TOKEN` — token do Meta com `ads_read` (sem ele o painel abre em modo
+     demonstração, com o retrato real de 13–26/08/2026);
+   - `CODIGO_ACESSO` — o código que o time da Bridge vai digitar (ex.: `bridge2026`);
+   - opcionais: `META_CONTA` (padrão `1718135052525631`), `REGUA_VERDE`/`REGUA_AMARELO`
+     (padrão 40/60).
+3. **Deploy.** A URL gerada + o código de acesso é tudo que o time precisa. No celular,
+   "Adicionar à tela de início" transforma o painel num aplicativo.
+
+Detalhes de arquitetura e decisões: [`06-painel/README.md`](06-painel/README.md) e o
+contrato de dados em [`06-painel/contrato-payload.md`](06-painel/contrato-payload.md).
+
+---
+
 ## Início rápido
 
 Se você (ou um agente) está entrando neste projeto agora, leia nesta ordem:
@@ -22,6 +54,8 @@ Se você (ou um agente) está entrando neste projeto agora, leia nesta ordem:
 ```
 bridge-moinhos/
 ├── README.md                       ← você está aqui
+├── api/ · lib/ · public/ · dev.js  ← aplicação do painel de corretores
+├── 06-painel/                      ← contrato de dados, mockup e decisões do painel
 ├── CONTEXTO.md                     ← briefing curto para agentes de IA
 ├── CHANGELOG.md                    ← histórico de mudanças de estratégia
 │

@@ -1,14 +1,17 @@
 # Painel de corretores — Bridge Moinhos
 
 Réplica do painel de rede da Elite Futevôlei, adaptada para a operação digital do
-Carlos Carvalho. Esta pasta é a área de trabalho do painel: por enquanto contém o
-**mockup navegável** com dado real, antes de virar aplicação.
+Carlos Carvalho. **A aplicação mora na raiz do repositório** (`api/`, `lib/`,
+`public/`, `dev.js`) — instruções de deploy no README principal. Esta pasta guarda
+o material de projeto do painel:
 
-- `mockup/rede.html` — o painel, arquivo único e autossuficiente (abre offline).
-- `mockup/rede.template.html` — a fonte, com marcadores no lugar dos assets embutidos.
-- `assets/` — fontes Satoshi, logos Case e os retratos tratados dos corretores.
-
-Para regerar o `rede.html` depois de editar o template, veja `build.py`.
+- `contrato-payload.md` — o contrato do `/api/corretores` (fonte de verdade entre
+  backend e frontend).
+- `dados/snapshot-2026-08-26.json` — os números reais que alimentam o modo demo.
+- `mockup/` — o protótipo aprovado que deu origem ao frontend (arquivo único,
+  abre offline; `build.py` regera a partir do template).
+- `assets/` — fontes Satoshi, logos Case e os retratos tratados dos corretores
+  (as cópias servidas ao navegador estão em `public/assets/`).
 
 ---
 
