@@ -136,9 +136,11 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .placar .var.neutro{color:rgba(255,255,255,.6)}
 
 /* ---------- cartões de corretor ---------- */
-.grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(268px,100%),1fr));gap:14px}
+/* Um cartão por linha, sempre: o Carlos lê no celular, rolando — como um feed.
+   No desktop os cartões ficam largos e respiram, em vez de virar mosaico. */
+.grade{display:flex;flex-direction:column;gap:14px}
 .u{background:var(--branco);border:1px solid var(--linha);border-radius:14px;
-  padding:15px 16px 14px;box-shadow:var(--sombra);display:flex;flex-direction:column;
+  padding:18px 20px 16px;box-shadow:var(--sombra);display:flex;flex-direction:column;
   transition:border-color .15s}
 .u:hover{border-color:var(--linha-forte)}
 .u.bad{border-left:3px solid var(--neg)}
@@ -149,24 +151,28 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .u-quem{display:flex;gap:12px;align-items:center;min-width:0}
 /* O rosto é o ponto do cartão: o projeto do Carlos é sobre corretor, não sobre campanha.
    96px é o teto que a menor foto original (227px) sustenta em tela retina. */
-.retrato{width:56px;height:56px;border-radius:50%;flex:0 0 auto;object-fit:cover;
+.retrato{width:80px;height:80px;border-radius:50%;flex:0 0 auto;object-fit:cover;
   border:2px solid var(--branco);box-shadow:0 0 0 1px var(--linha-forte);background:var(--off)}
-.u-nome{font-size:17px;font-weight:700;letter-spacing:-.018em;color:var(--ink);line-height:1.2;
+.u-nome{font-size:19px;font-weight:700;letter-spacing:-.018em;color:var(--ink);line-height:1.2;
   overflow-wrap:anywhere}
 .u-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;min-height:18px}
-.chip{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+.chip{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   padding:2px 6px;border-radius:5px;background:var(--off);color:var(--ink-3);
   border:1px solid var(--linha);white-space:nowrap}
 .chip.novo{color:var(--blue-2);background:rgba(70,96,170,.08);border-color:rgba(70,96,170,.22)}
+/* classificação pela régua, com a mesma cor do semáforo do placar */
+.chip.ok{color:var(--pos);background:rgba(33,135,77,.10);border-color:rgba(33,135,77,.28)}
+.chip.warn{color:var(--atn);background:rgba(234,179,8,.14);border-color:rgba(138,109,0,.30)}
+.chip.bad{color:var(--neg);background:rgba(239,0,0,.07);border-color:rgba(239,0,0,.28)}
 .pos{font-size:11.5px;font-weight:700;color:var(--ink-3);background:var(--off);
   border:1px solid var(--linha);border-radius:7px;width:25px;height:25px;flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
 .u-cpr{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:13px}
-.u-cpr .n{font-size:28px;font-weight:700;letter-spacing:-.042em;line-height:1;
+.u-cpr .n{font-size:clamp(30px,5vw,38px);font-weight:700;letter-spacing:-.042em;line-height:1;
   font-variant-numeric:tabular-nums}
 .u.ok .u-cpr .n{color:var(--pos)} .u.warn .u-cpr .n{color:var(--atn)}
 .u.bad .u-cpr .n{color:var(--neg)}
-.u.mute .u-cpr .n{color:var(--ink-3);font-size:19px}
+.u.mute .u-cpr .n{color:var(--ink-3);font-size:21px}
 .u-cpr .l{font-size:10.5px;color:var(--ink-3);width:100%;margin-top:2px}
 
 .regua{margin-top:12px}
@@ -183,7 +189,7 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .u-linha2{display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:11px;padding-top:10px;
   border-top:1px solid var(--linha);font-size:11px;color:var(--ink-3)}
 .u-linha2 b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;margin-right:4px;
-  font-size:13.5px}
+  font-size:15px}
 /* A frase em português é para o Carlos. O número cru já está acima, para o gestor. */
 .u-frase{font-size:11px;color:var(--ink-3);margin-top:9px;line-height:1.5}
 .u-frase b{color:var(--ink-2);font-weight:700;font-variant-numeric:tabular-nums}
@@ -271,6 +277,20 @@ a.cr-thumb:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
 .ver:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
 
 /* ---------- leitura ---------- */
+/* Recolhida por padrão: fica fora da rolagem de relance, mas a um toque. */
+.leitura-wrap{border:1px solid var(--linha);border-radius:15px;background:var(--branco);
+  box-shadow:var(--sombra);overflow:hidden}
+.leitura-wrap > summary{cursor:pointer;padding:16px 20px;list-style:none;display:flex;
+  align-items:center;gap:10px}
+.leitura-wrap > summary::-webkit-details-marker{display:none}
+.leitura-wrap > summary::before{content:"\203A";font-size:18px;color:var(--orange-dark);
+  font-weight:700;transition:transform .16s;display:inline-block}
+.leitura-wrap[open] > summary::before{transform:rotate(90deg)}
+.leitura-wrap > summary:hover{background:var(--off)}
+.leitura-wrap > summary:focus-visible{outline:2px solid var(--navy);outline-offset:-2px}
+.leitura-wrap > summary .abrir{margin-left:auto;font-size:11.5px;color:var(--ink-3);font-weight:700}
+.leitura-wrap[open] > summary .abrir{visibility:hidden}
+.leitura-wrap .leitura{border:0;border-radius:0;box-shadow:none;border-top:1px solid var(--linha)}
 .leitura{background:var(--branco);border:1px solid var(--linha);border-radius:15px;
   padding:20px 22px;box-shadow:var(--sombra)}
 .leitura ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
@@ -317,6 +337,7 @@ a.cr-thumb:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
 
 @media (max-width:640px){
   .hero{padding:28px 22px 26px}
+  .retrato{width:64px;height:64px}
   .hero-in{flex-direction:column;align-items:flex-start;gap:18px}
   .hero-meta{align-items:flex-start}
   .stamp{text-align:left}
@@ -431,8 +452,8 @@ function monta() {
   <div class="wrap">
     <header class="hero"><div class="hero-in">
       <div>
-        <p class="eyebrow">Leads no WhatsApp · corretores</p>
-        <h1>Carlos Carvalho<br><em>Os quatro no ar</em></h1>
+        <p class="eyebrow">Carlos Carvalho Imóveis</p>
+        <h1>Performance<br><em>por corretor</em></h1>
         <p class="lede">Cada corretor pelo <b>custo por lead</b>, contra o mesmo
         número de dias imediatamente anteriores.</p>
       </div>
@@ -585,7 +606,9 @@ function monta() {
     </section>` : ''}
 
     <section>
-      <div class="sec-head"><div><h2>Leitura do período</h2></div></div>
+      <details class="leitura-wrap">
+      <summary><h2 style="display:inline">Leitura do período</h2>
+        <span class="abrir">toque para abrir</span></summary>
       <div class="leitura">
         <ul>${(D.leitura || []).map(l => `<li>${esc(l)}</li>`).join('')}</ul>
         ${D.aprofundar && D.aprofundar.length ? `<div class="aprof">
@@ -596,6 +619,7 @@ function monta() {
           <span id="copia-ok"></span>
         </div>
       </div>
+      </details>
     </section>
 
     <footer class="foot">
@@ -694,7 +718,7 @@ function pintaGrade() {
           <div style="min-width:0">
             <div class="u-nome">${esc(c.nome)}</div>
             <div class="u-chips">
-              <span class="chip" title="${esc(c.pracas)}">${esc(c.praca)}</span>
+              ${mute ? '' : `<span class="chip ${esc(c.status)}">${ROT[c.status] || ''}</span>`}
               ${c.estreia ? '<span class="chip novo">estreou</span>' : ''}
             </div>
           </div>
@@ -704,8 +728,7 @@ function pintaGrade() {
       <div class="u-cpr">
         <span class="n">${mute ? 'sem lead' : brl(c.cpl)}</span>
         ${c.ant ? varHTML(c.cpl, c.ant.cpl, true) : ''}
-        <span class="l">${mute ? 'nenhuma conversa aberta no período'
-          : `por lead · ${ROT[c.status] || ''}`}</span>
+        <span class="l">${mute ? 'nenhuma conversa aberta no período' : 'por lead'}</span>
       </div>
       ${reguaHTML(c.cpl)}
       <div class="u-linha2">
