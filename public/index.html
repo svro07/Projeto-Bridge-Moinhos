@@ -226,16 +226,21 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .tabmes th:first-child,.tabmes td:first-child{text-align:left;font-weight:700;color:var(--ink)}
 
 /* ---------- criativos ---------- */
-.sel-uni{display:inline-flex;align-items:center;gap:9px;background:var(--branco);
-  border:1px solid var(--linha);border-radius:11px;padding:5px 6px 5px 14px;box-shadow:var(--sombra)}
-.sel-uni > span{font-size:10.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
-  color:var(--ink-3)}
-.sel-uni select{appearance:none;font-family:var(--sans);font-size:13px;font-weight:700;
-  color:var(--ink);background:var(--off);border:1px solid var(--linha);border-radius:8px;
-  padding:8px 30px 8px 12px;cursor:pointer;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2377809B' stroke-width='2.4' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
-  background-repeat:no-repeat;background-position:right 9px center;background-size:13px}
-.sel-uni select:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+/* Escolha de corretor por toque, com a foto — mais rápido de achar que nome em
+   lista, e sem estado pré-selecionado que pareça aleatório. Nada aparece até o
+   Carlos tocar em alguém (ou em Todos). */
+.corr-pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{appearance:none;display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);
+  font-size:13.5px;font-weight:700;color:var(--ink-2);background:var(--branco);
+  border:1px solid var(--linha-forte);border-radius:24px;padding:6px 16px 6px 7px;cursor:pointer;
+  transition:border-color .14s,background .14s,color .14s}
+.pill img{width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--off)}
+.pill.todos{padding:6px 16px}
+.pill:hover{border-color:var(--navy);color:var(--ink)}
+.pill[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:var(--navy)}
+.pill:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.cr-dono{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+.cr-dono b{color:var(--ink-2);font-weight:700}
 .crs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:14px}
 .cr{display:flex;gap:13px;align-items:flex-start;background:var(--branco);
   border:1px solid var(--linha);border-radius:13px;padding:14px 16px;box-shadow:var(--sombra);
@@ -445,8 +450,9 @@ async function carrega(extra) {
 function monta() {
   const demo = D.modo === 'demo';
   const trava = demo ? 'disabled title="Disponível no modo ao vivo, com o token do Meta configurado"' : '';
-  if (!D.corretores.some(c => c.id === corretorSel))
-    corretorSel = D.corretores.length ? D.corretores[0].id : '';
+  // nada vem pré-selecionado: anúncio só aparece depois de um toque consciente
+  if (corretorSel && corretorSel !== 'todos' && !D.corretores.some(c => c.id === corretorSel))
+    corretorSel = '';
 
   app.innerHTML = `
   <div class="wrap">
@@ -594,13 +600,14 @@ function monta() {
       <div class="sec-head">
         <div><h2>Anúncios</h2>
         <p id="cr-sub"></p></div>
-        <label class="sel-uni">
-          <span>Corretor</span>
-          <select id="cr-uni" aria-label="Filtrar anúncios por corretor">
-            ${D.corretores.map(c =>
-              `<option value="${esc(c.id)}" ${c.id===corretorSel?'selected':''}>${esc(c.nome)}</option>`).join('')}
-          </select>
-        </label>
+      </div>
+      <div class="corr-pills" id="cr-pills" role="group" aria-label="Escolher de quem ver os anúncios">
+        ${D.corretores.map(c => `<button type="button" class="pill" data-id="${esc(c.id)}"
+            aria-pressed="${c.id===corretorSel}">
+            <img src="/assets/corretores/${esc(c.foto)}" alt=""
+              onerror="this.onerror=null;this.src=window.__semFoto">${esc(c.nome)}</button>`).join('')}
+        <button type="button" class="pill todos" data-id="todos"
+          aria-pressed="${corretorSel==='todos'}">Todos</button>
       </div>
       <div class="crs" id="crs"></div>
     </section>` : ''}
@@ -748,18 +755,36 @@ function pintaCriativos() {
   if (!host) return;
   const cQ = codigo() ? '&c=' + encodeURIComponent(codigo()) : '';
   const aoVivo = D.modo === 'ao-vivo';
-  const corretor = D.corretores.find(x => x.id === corretorSel);
-  const lista = (D.criativos && D.criativos[corretorSel]) || [];
+  const sub = document.getElementById('cr-sub');
+
+  // sem escolha, sem anúncio: um convite no lugar de uma lista que parece aleatória
+  if (!corretorSel) {
+    if (sub) sub.textContent = '';
+    host.innerHTML = `<div class="aviso"><b>Toque na foto de um corretor aí em cima</b> para ver
+      os anúncios que estão rodando para ele — ou toque em “Todos” para ver os anúncios dos
+      quatro juntos.</div>`;
+    return;
+  }
+
+  const todos = corretorSel === 'todos';
+  const corretor = todos ? null : D.corretores.find(x => x.id === corretorSel);
+  const lista = todos
+    ? D.corretores.flatMap(c => ((D.criativos && D.criativos[c.id]) || [])
+        .map(x => ({ ...x, dono: c.nome })))
+        .sort((a,b) => b.leads - a.leads || (a.cpl ?? Infinity) - (b.cpl ?? Infinity))
+    : (D.criativos && D.criativos[corretorSel]) || [];
   const zerados = lista.filter(x => !x.leads);
   const perdido = zerados.reduce((s,x) => s + x.spend, 0);
 
-  const sub = document.getElementById('cr-sub');
   if (sub) sub.textContent = lista.length
-    ? `${lista.length} anúncio${lista.length===1?'':'s'} com entrega na campanha de `
-      + `${corretor ? corretor.nome : ''} no período, do que mais trouxe lead para o que `
-      + `menos trouxe.`
+    ? (todos
+        ? `Os anúncios dos ${D.corretores.length} corretores no período, do que mais trouxe lead ` +
+          `para o que menos trouxe — com o dono de cada um.`
+        : `${lista.length} anúncio${lista.length===1?'':'s'} com entrega na campanha de ` +
+          `${corretor ? corretor.nome : ''} no período, do que mais trouxe lead para o que ` +
+          `menos trouxe.`)
       + (perdido ? ` ${zerados.length} ${zerados.length===1?'gastou':'gastaram'} ${brl(perdido)} sem trazer nenhum.` : '')
-      + (aoVivo ? ' "Ver anúncio" abre a prévia oficial do Meta.' : '')
+      + (aoVivo ? ' “Ver anúncio” abre a prévia oficial do Meta.' : '')
     : '';
 
   if (!lista.length) {
@@ -787,6 +812,7 @@ function pintaCriativos() {
              ${I.imagem}<span class="fmt">${esc(fmt)}</span></span>`}
       <div class="cr-body">
         <div class="cr-nome">${esc(x.nome)}</div>
+        ${x.dono ? `<div class="cr-dono">de <b>${esc(x.dono)}</b></div>` : ''}
         ${destaque ? '<div class="cr-tag">lead barato</div>' : ''}
         <div class="cr-mets">
           <span><b>${n0(x.leads)}</b>lead${x.leads===1?'':'s'}</span>
@@ -975,7 +1001,11 @@ function grafFunil(host, W) {
     const y = PADT + i*linhaH, meio = y + linhaH/2;
     svg.appendChild(tx(PADL-11, meio-1, d.nome,
       { 'text-anchor':'end', fill:C.tinta, 'font-size':12, 'font-weight':700 }));
-    svg.appendChild(tx(PADL-11, meio+13, n0(d.cliques) + ' cliques · ' + n0(d.leads) + ' conversas',
+    // em tela estreita a margem esquerda não comporta o rótulo inteiro — e um
+    // rótulo cortado ("ques · 19 conversas") é pior do que um mais curto
+    svg.appendChild(tx(PADL-11, meio+13,
+      W < 520 ? n0(d.cliques) + ' cliques'
+              : n0(d.cliques) + ' cliques · ' + n0(d.leads) + ' conversas',
       { 'text-anchor':'end', fill:C.texto, 'font-size':10 }));
     svg.appendChild(el('rect', { x:PADL, y:meio-barH/2, width:Math.max(2, X(d.taxa)-PADL),
       height:barH, rx:5, ry:5, fill: media > 0 && d.taxa >= media ? C.ok : C.leads }));
@@ -1053,8 +1083,14 @@ function ligaControles() {
     carrega(q);
   };
 
-  const selUni = document.getElementById('cr-uni');
-  if (selUni) selUni.onchange = () => { corretorSel = selUni.value; pintaCriativos(); };
+  const pills = document.getElementById('cr-pills');
+  if (pills) pills.onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    corretorSel = b.dataset.id;
+    pills.querySelectorAll('button').forEach(x =>
+      x.setAttribute('aria-pressed', String(x.dataset.id === corretorSel)));
+    pintaCriativos();
+  };
 
   document.getElementById('copiar').onclick = async () => {
     const txt = `*Bridge Moinhos · painel de corretores*\n${D.periodo.titulo}\n\n` +
