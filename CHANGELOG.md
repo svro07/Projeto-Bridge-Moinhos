@@ -57,6 +57,15 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
 - Corretores definidos: ...
 -->
 
+### [2026-08-31] Painel de corretores — publicado na Vercel
+
+- **O que mudou:** o painel está no ar, em projeto Vercel conectado a este repositório
+  com deploy automático a cada push na branch principal. `META_TOKEN` e `META_CONTA`
+  configurados na hospedagem — modo ao vivo.
+- **Decisão de acesso:** painel **sem código de acesso** por decisão do Manuel (Case),
+  já que o link será compartilhado com uma única pessoa. O gate por `CODIGO_ACESSO`
+  segue construído e pode ser ativado a qualquer momento com uma variável na Vercel.
+
 ### [2026-08-27] Painel de corretores — aplicação criada neste repositório
 
 - **O que mudou:** o repositório deixa de ser só documentação e passa a hospedar a
