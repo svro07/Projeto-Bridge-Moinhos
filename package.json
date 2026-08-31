@@ -1,0 +1,5 @@
+{
+  "name": "painel-bridge-moinhos",
+  "private": true,
+  "scripts": { "dev": "node dev.js" }
+}

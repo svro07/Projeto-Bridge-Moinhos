@@ -1,0 +1,60 @@
+{
+  "comentario": "Snapshot real da conta CA - Bridge Moinhos 01 (1718135052525631), puxado da Graph API em 26/08/2026. Alimenta o modo demo (lib/mock.js). Janela: 13/08-26/08/2026; anterior: 30/07-12/08/2026. leads = onsite_conversion.messaging_conversation_started_7d.",
+  "geradoEm": "2026-08-26",
+  "periodo": { "desde": "2026-08-13", "ate": "2026-08-26" },
+  "anterior": { "desde": "2026-07-30", "ate": "2026-08-12" },
+  "corretores": {
+    "fittipaldi": { "campanhaId": "120247681064840135", "campanha": "[ENGAJAMENTO] [Fittipaldi] Whats",
+      "spend": 315.95, "leads": 19, "impressions": 8204, "reach": 4160, "frequency": 1.972, "ctr": 3.07, "cpm": 38.51,
+      "anterior": { "spend": 329.14, "leads": 8 } },
+    "birk": { "campanhaId": "120248169086640135", "campanha": "[ENGAJAMENTO] [Rafael Birk] Whats",
+      "spend": 465.88, "leads": 19, "impressions": 14245, "reach": 6638, "frequency": 2.146, "ctr": 0.61, "cpm": 32.70,
+      "anterior": null },
+    "adriano": { "campanhaId": "120248092035700135", "campanha": "[ENGAJAMENTO] [Adriano] Whats",
+      "spend": 453.53, "leads": 16, "impressions": 9407, "reach": 5356, "frequency": 1.756, "ctr": 3.37, "cpm": 48.21,
+      "anterior": { "spend": 75.41, "leads": 2 } },
+    "sandra": { "campanhaId": "120248172545900135", "campanha": "[ENGAJAMENTO] [Sandra] Whats",
+      "spend": 409.88, "leads": 13, "impressions": 18692, "reach": 10475, "frequency": 1.784, "ctr": 1.71, "cpm": 21.93,
+      "anterior": null }
+  },
+  "meses": [
+    { "rot": "mai", "spend": 1713.66, "leads": 20 },
+    { "rot": "jun", "spend": 3959.99, "leads": 134 },
+    { "rot": "jul", "spend": 4308.91, "leads": 95 },
+    { "rot": "ago", "spend": 3610.96, "leads": 143, "parcial": true }
+  ],
+  "criativos": {
+    "fittipaldi": [
+      { "adId": "120248258642590135", "nome": "IMG - Bela Vista 2.190.000,00", "spend": 41.73, "impressions": 1140, "ctr": 7.37, "leads": 5 },
+      { "adId": "120248258693150135", "nome": "IMG - Bela Vista 2.190.000,00", "spend": 40.81, "impressions": 674, "ctr": 4.01, "leads": 5 },
+      { "adId": "120248258695530135", "nome": "VID - Sync", "spend": 81.67, "impressions": 2889, "ctr": 1.42, "leads": 2 },
+      { "adId": "120248147827830135", "nome": "IMG - Country Club com desconto", "spend": 62.92, "impressions": 1457, "ctr": 2.54, "leads": 2 },
+      { "adId": "120248147840670135", "nome": "IMG - Country Club com desconto", "spend": 52.43, "impressions": 1208, "ctr": 3.23, "leads": 1 },
+      { "adId": "120248124152370135", "nome": "CAR - Bairro Moinhos de vento 1.900 — Cópia", "spend": 12.17, "impressions": 256, "ctr": 3.52, "leads": 1 }
+    ],
+    "birk": [
+      { "adId": "120248276093940135", "nome": "VID - Ben 4", "spend": 122.50, "impressions": 3906, "ctr": 0.74, "leads": 8 },
+      { "adId": "120248226828120135", "nome": "VID - Ben 2", "spend": 68.34, "impressions": 2059, "ctr": 0.63, "leads": 5 },
+      { "adId": "120248169086650135", "nome": "VID - Ben", "spend": 62.09, "impressions": 1853, "ctr": 0.65, "leads": 4 },
+      { "adId": "120248276095920135", "nome": "VID - Ben 3", "spend": 36.12, "impressions": 1202, "ctr": 1.00, "leads": 1 },
+      { "adId": "120248169086660135", "nome": "VID - Ben", "spend": 37.53, "impressions": 1274, "ctr": 0.47, "leads": 0 },
+      { "adId": "120248169086630135", "nome": "VID - Ben", "spend": 35.54, "impressions": 1102, "ctr": 0.27, "leads": 0 }
+    ],
+    "adriano": [
+      { "adId": "120248094668000135", "nome": "CAR - Moinhos de vento", "spend": 149.00, "impressions": 2216, "ctr": 5.87, "leads": 5 },
+      { "adId": "120248092035620135", "nome": "CAR - Moinhos de vento", "spend": 56.79, "impressions": 1263, "ctr": 4.99, "leads": 3 },
+      { "adId": "120248094675430135", "nome": "CAR - Moinhos de vento", "spend": 50.80, "impressions": 1433, "ctr": 1.54, "leads": 2 },
+      { "adId": "120248260667740135", "nome": "IMG - Chacara das pedras", "spend": 39.07, "impressions": 1299, "ctr": 2.62, "leads": 2 },
+      { "adId": "120248260649460135", "nome": "IMG - Chacara das pedras", "spend": 35.95, "impressions": 1276, "ctr": 1.25, "leads": 1 },
+      { "adId": "120248260667710135", "nome": "IMG - Chacara das pedras", "spend": 76.73, "impressions": 1486, "ctr": 2.89, "leads": 1 }
+    ],
+    "sandra": [
+      { "adId": "120248172591460135", "nome": "CAR - Bela vista Sandra", "spend": 129.54, "impressions": 7249, "ctr": 1.60, "leads": 8 },
+      { "adId": "120248172591450135", "nome": "CAR - Bela vista Sandra", "spend": 58.66, "impressions": 3422, "ctr": 1.52, "leads": 3 },
+      { "adId": "120248172545940135", "nome": "CAR - Bela vista Sandra", "spend": 38.85, "impressions": 3307, "ctr": 1.00, "leads": 1 },
+      { "adId": "120248294501590135", "nome": "IMG - Rio branco", "spend": 59.50, "impressions": 1174, "ctr": 2.13, "leads": 0 },
+      { "adId": "120248294565570135", "nome": "IMG - Rio branco", "spend": 29.07, "impressions": 1020, "ctr": 2.94, "leads": 0 },
+      { "adId": "120248294565610135", "nome": "VID - Rio branco", "spend": 25.81, "impressions": 502, "ctr": 2.59, "leads": 0 }
+    ]
+  }
+}

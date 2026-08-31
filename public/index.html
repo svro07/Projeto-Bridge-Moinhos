@@ -1,0 +1,1056 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de Corretores</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏠%3C/text%3E%3C/svg%3E">
+<style>
+@font-face{font-family:'Satoshi';font-weight:400;font-display:swap;
+  src:url('/assets/Satoshi-Regular.woff2') format('woff2')}
+@font-face{font-family:'Satoshi';font-weight:700;font-display:swap;
+  src:url('/assets/Satoshi-Bold.woff2') format('woff2')}
+
+/* Identidade Case: superfícies chapadas, navy para display, branco para conteúdo.
+   Painel de marca — tema único e deliberado, tudo pintado explicitamente. */
+:root{
+  --navy:#1A2447; --orange:#EA7439; --orange-dark:#BC4C14;
+  --bege:#F9DEC0; --blue-2:#4660AA;
+  --off:#FAF5F5; --branco:#FFFFFF;
+  --ink:#1A2447; --ink-2:#3E4763; --ink-3:#77809B;
+  --linha:rgba(26,36,71,.14); --linha-forte:rgba(26,36,71,.28);
+  /* Semáforo, separado do laranja da marca. Amarelo puro não passa em contraste
+     sobre branco: o texto usa o tom escuro, as faixas usam o vivo. */
+  --pos:#21874D; --neg:#EF0000; --atn:#8A6D00; --atn-vivo:#EAB308;
+  --pos-nv:#6BDB9B; --neg-nv:#FF8585; --atn-nv:#FFD166;
+  --sombra:0 1px 2px rgba(26,36,71,.06), 0 10px 28px rgba(26,36,71,.07);
+  --sans:'Satoshi', Manrope, Inter, system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--off)}
+body{margin:0;font-family:var(--sans);font-weight:400;font-size:15px;line-height:1.55;
+  color:var(--ink-2);background:var(--off);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:0 22px 72px}
+
+.eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.35em;text-transform:uppercase;
+  color:var(--bege);margin:0}
+h1{margin:10px 0 0;font-size:clamp(28px,4.4vw,44px);font-weight:700;letter-spacing:-.028em;
+  line-height:1.05;color:#fff;text-wrap:balance}
+h1 em{font-style:normal;color:var(--orange)}
+h2{margin:0;font-size:10.5px;font-weight:700;letter-spacing:.35em;text-transform:uppercase;
+  color:var(--ink)}
+.lede{margin:13px 0 0;font-size:15.5px;color:rgba(255,255,255,.80);max-width:54ch}
+.lede b{color:var(--bege);font-weight:700}
+
+.hero{margin:0 -22px 30px;padding:36px 22px 32px;background:var(--navy)}
+.hero-in{max-width:1236px;margin:0 auto;display:flex;flex-wrap:wrap;gap:26px;
+  align-items:flex-end;justify-content:space-between}
+.hero-meta{display:flex;flex-direction:column;align-items:flex-end;gap:14px;flex:0 0 auto}
+.logo{height:44px;width:auto;display:block;flex:none}
+.stamp{font-size:11.5px;color:rgba(255,255,255,.72);text-align:right;line-height:1.8;
+  font-variant-numeric:tabular-nums}
+.stamp b{color:var(--bege);font-weight:700}
+
+.note{display:flex;gap:12px;padding:14px 17px;border-radius:12px;font-size:13.5px;line-height:1.6;
+  background:var(--branco);border:1px solid var(--linha);color:var(--ink-2);box-shadow:var(--sombra);
+  margin-bottom:16px}
+.note .ico{flex:0 0 auto;width:22px;height:22px;border-radius:7px;display:flex;align-items:center;
+  justify-content:center;margin-top:1px;background:rgba(234,116,57,.14);color:var(--orange-dark)}
+.note .ico svg{width:13px;height:13px}
+.note b{color:var(--ink);font-weight:700}
+
+section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
+.sec-head{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;justify-content:space-between}
+.sec-head p{margin:6px 0 0;font-size:13.5px;color:var(--ink-3);max-width:64ch}
+
+/* ---------- barra de período ---------- */
+.periodbar{display:flex;flex-direction:column;gap:12px;background:var(--branco);
+  border:1px solid var(--linha);border-radius:14px;padding:14px;box-shadow:var(--sombra)}
+.pb-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.pb-row + .pb-row{border-top:1px solid var(--linha);padding-top:12px}
+.pb-left{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;background:var(--off);
+  border:1px solid var(--linha);border-radius:11px}
+.seg button{appearance:none;border:0;background:none;font-family:var(--sans);font-size:13px;
+  font-weight:700;color:var(--ink-2);padding:8px 15px;border-radius:8px;cursor:pointer;
+  transition:background .14s,color .14s;white-space:nowrap}
+.seg button:hover{color:var(--ink);background:rgba(26,36,71,.05)}
+.seg button[aria-pressed="true"]{background:var(--orange);color:var(--navy)}
+.seg button:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.seg button[disabled]{opacity:.45;cursor:not-allowed}
+.seg button[disabled]:hover{background:none;color:var(--ink-2)}
+.seg button[disabled][aria-pressed="true"]{background:var(--orange);color:var(--navy)}
+.seg-lbl{font-size:10.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--ink-3);padding-left:4px}
+.comp-auto{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.comp-auto b{color:var(--ink);font-weight:700}
+.comp-manual[hidden]{display:none}
+.periodo-nota{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums;text-align:right}
+.periodo-nota b{color:var(--ink);font-weight:700}
+.cal{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.cal input[type=date]{appearance:none;font-family:var(--sans);font-size:13px;font-weight:700;
+  color:var(--ink);background:var(--branco);border:1px solid var(--linha-forte);border-radius:9px;
+  padding:8px 11px}
+.cal input[type=date]:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+.cal input[type=date][disabled]{opacity:.45;cursor:not-allowed}
+.cal .ate{font-size:12px;color:var(--ink-3)}
+.btn{appearance:none;display:inline-flex;align-items:center;gap:7px;font-family:var(--sans);
+  font-size:13px;font-weight:700;cursor:pointer;border-radius:9px;padding:9px 16px;
+  border:1px solid transparent;transition:.14s;white-space:nowrap;text-decoration:none}
+.btn svg{width:14px;height:14px;flex:0 0 auto}
+.btn.aplicar{background:var(--navy);color:#fff}
+.btn.aplicar:hover{background:#232F5C}
+.btn.ghost{background:none;color:var(--ink-2);border-color:var(--linha-forte)}
+.btn.ghost:hover{color:var(--ink);border-color:var(--navy)}
+.btn:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* ---------- placar ---------- */
+.placar{background:var(--navy);border-radius:16px;padding:24px 26px;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:22px 30px}
+.pl{display:flex;flex-direction:column;gap:3px}
+.pl .rot{font-size:10.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--bege)}
+.pl .n{font-size:clamp(28px,3.4vw,40px);font-weight:700;letter-spacing:-.04em;line-height:1.02;
+  font-variant-numeric:tabular-nums;color:#fff;white-space:nowrap}
+.pl .n.destaque{color:var(--bege)}
+.pl .sub{font-size:12px;color:rgba(255,255,255,.62);font-variant-numeric:tabular-nums;margin-top:2px}
+.pl .sub b{color:#fff;font-weight:700}
+.semaforo{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+.sf{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;
+  padding:4px 11px;border-radius:20px;border:1px solid;font-variant-numeric:tabular-nums}
+.sf .dot{width:7px;height:7px;border-radius:50%}
+.sf.ok{color:var(--pos-nv);border-color:rgba(107,219,155,.4);background:rgba(107,219,155,.12)}
+.sf.ok .dot{background:var(--pos-nv)}
+.sf.warn{color:var(--atn-nv);border-color:rgba(255,209,102,.4);background:rgba(255,209,102,.12)}
+.sf.warn .dot{background:var(--atn-nv)}
+.sf.bad{color:var(--neg-nv);border-color:rgba(255,133,133,.4);background:rgba(255,133,133,.12)}
+.sf.bad .dot{background:var(--neg-nv)}
+.sf.mute{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.07)}
+.sf.mute .dot{background:rgba(255,255,255,.6)}
+
+.var{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.var.bom{color:var(--pos)} .var.ruim{color:var(--neg)} .var.neutro{color:var(--ink-3)}
+.placar .var.bom{color:var(--pos-nv)} .placar .var.ruim{color:var(--neg-nv)}
+.placar .var.neutro{color:rgba(255,255,255,.6)}
+
+/* ---------- cartões de corretor ---------- */
+.grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(268px,100%),1fr));gap:14px}
+.u{background:var(--branco);border:1px solid var(--linha);border-radius:14px;
+  padding:15px 16px 14px;box-shadow:var(--sombra);display:flex;flex-direction:column;
+  transition:border-color .15s}
+.u:hover{border-color:var(--linha-forte)}
+.u.bad{border-left:3px solid var(--neg)}
+.u.warn{border-left:3px solid var(--atn-vivo)}
+.u.ok{border-left:3px solid var(--pos)}
+.u.mute{border-left:3px solid var(--ink-3)}
+.u-top{display:flex;align-items:flex-start;gap:12px;justify-content:space-between}
+.u-quem{display:flex;gap:12px;align-items:center;min-width:0}
+/* O rosto é o ponto do cartão: o projeto do Carlos é sobre corretor, não sobre campanha.
+   96px é o teto que a menor foto original (227px) sustenta em tela retina. */
+.retrato{width:56px;height:56px;border-radius:50%;flex:0 0 auto;object-fit:cover;
+  border:2px solid var(--branco);box-shadow:0 0 0 1px var(--linha-forte);background:var(--off)}
+.u-nome{font-size:17px;font-weight:700;letter-spacing:-.018em;color:var(--ink);line-height:1.2;
+  overflow-wrap:anywhere}
+.u-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;min-height:18px}
+.chip{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 6px;border-radius:5px;background:var(--off);color:var(--ink-3);
+  border:1px solid var(--linha);white-space:nowrap}
+.chip.novo{color:var(--blue-2);background:rgba(70,96,170,.08);border-color:rgba(70,96,170,.22)}
+.pos{font-size:11.5px;font-weight:700;color:var(--ink-3);background:var(--off);
+  border:1px solid var(--linha);border-radius:7px;width:25px;height:25px;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.u-cpr{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:13px}
+.u-cpr .n{font-size:28px;font-weight:700;letter-spacing:-.042em;line-height:1;
+  font-variant-numeric:tabular-nums}
+.u.ok .u-cpr .n{color:var(--pos)} .u.warn .u-cpr .n{color:var(--atn)}
+.u.bad .u-cpr .n{color:var(--neg)}
+.u.mute .u-cpr .n{color:var(--ink-3);font-size:19px}
+.u-cpr .l{font-size:10.5px;color:var(--ink-3);width:100%;margin-top:2px}
+
+.regua{margin-top:12px}
+.regua-track{position:relative;height:8px;border-radius:5px;overflow:hidden;display:flex;
+  border:1px solid var(--linha)}
+.regua-track i{display:block;height:100%}
+.regua-mark{position:absolute;top:-4px;width:3px;height:16px;border-radius:2px;background:var(--navy);
+  box-shadow:0 0 0 2px #fff;transform:translateX(-1.5px)}
+.regua-scale{position:relative;height:13px;margin-top:5px;font-size:10px;color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
+.regua-scale span{position:absolute;top:0;white-space:nowrap}
+.regua-scale .ini{left:0}.regua-scale .fim{right:0}
+
+.u-linha2{display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:11px;padding-top:10px;
+  border-top:1px solid var(--linha);font-size:11px;color:var(--ink-3)}
+.u-linha2 b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;margin-right:4px;
+  font-size:13.5px}
+/* A frase em português é para o Carlos. O número cru já está acima, para o gestor. */
+.u-frase{font-size:11px;color:var(--ink-3);margin-top:9px;line-height:1.5}
+.u-frase b{color:var(--ink-2);font-weight:700;font-variant-numeric:tabular-nums}
+/* A nota só sobrevive quando explica uma AUSÊNCIA de variação: sem ela, cartão
+   sem porcentagem parece dado faltando. */
+.u-ant{font-size:10px;color:var(--ink-3);margin-top:7px;font-variant-numeric:tabular-nums}
+
+/* ---------- gráficos ---------- */
+.cartao{background:var(--branco);border:1px solid var(--linha);border-radius:15px;
+  padding:18px 20px 14px;box-shadow:var(--sombra)}
+.cartao-topo{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.cartao-tit{font-size:15px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
+.cartao-sub{font-size:12px;color:var(--ink-3);margin-top:3px;max-width:62ch;line-height:1.5}
+.legenda{display:flex;gap:15px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);
+  font-weight:700;white-space:nowrap}
+.legenda i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:6px;
+  vertical-align:-1px}
+.plot{position:relative;width:100%;margin-top:14px;overflow-x:auto}
+.plot svg{display:block;width:100%;height:auto}
+.tabmes{margin-top:12px;border-top:1px solid var(--linha);padding-top:10px}
+.tabmes summary{cursor:pointer;font-size:11.5px;font-weight:700;color:var(--ink-3);
+  list-style:none;padding:2px 0}
+.tabmes summary::-webkit-details-marker{display:none}
+.tabmes summary::before{content:"\203A";display:inline-block;margin-right:7px;font-size:15px;
+  color:var(--orange-dark);transition:transform .16s}
+.tabmes[open] summary::before{transform:rotate(90deg)}
+.tabmes summary:hover{color:var(--ink)}
+.tabmes .rolagem{overflow-x:auto}
+.tabmes table{width:100%;border-collapse:collapse;font-size:12px;margin-top:9px}
+.tabmes th,.tabmes td{padding:6px 10px;text-align:right;white-space:nowrap;
+  border-bottom:1px solid rgba(26,36,71,.08);font-variant-numeric:tabular-nums}
+.tabmes th{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  font-weight:700}
+.tabmes th:first-child,.tabmes td:first-child{text-align:left;font-weight:700;color:var(--ink)}
+
+/* ---------- criativos ---------- */
+.sel-uni{display:inline-flex;align-items:center;gap:9px;background:var(--branco);
+  border:1px solid var(--linha);border-radius:11px;padding:5px 6px 5px 14px;box-shadow:var(--sombra)}
+.sel-uni > span{font-size:10.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--ink-3)}
+.sel-uni select{appearance:none;font-family:var(--sans);font-size:13px;font-weight:700;
+  color:var(--ink);background:var(--off);border:1px solid var(--linha);border-radius:8px;
+  padding:8px 30px 8px 12px;cursor:pointer;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2377809B' stroke-width='2.4' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 9px center;background-size:13px}
+.sel-uni select:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+.crs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:14px}
+.cr{display:flex;gap:13px;align-items:flex-start;background:var(--branco);
+  border:1px solid var(--linha);border-radius:13px;padding:14px 16px;box-shadow:var(--sombra);
+  transition:border-color .15s}
+.cr:hover{border-color:var(--linha-forte)}
+.cr.zerado{opacity:.78}
+.cr.destaque{border-color:rgba(33,135,77,.45)}
+.cr-rank{font-size:11.5px;font-weight:700;color:var(--ink-3);background:var(--off);
+  border:1px solid var(--linha);border-radius:7px;width:25px;height:25px;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;margin-top:2px}
+.cr-tag{display:inline-block;margin-top:6px;font-size:9.5px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding:2px 7px;border-radius:5px;color:var(--pos);
+  background:rgba(33,135,77,.10);border:1px solid rgba(33,135,77,.28)}
+/* A miniatura é o ponto do bloco: sem ver a peça, o ranking é só uma lista de
+   nomes. No modo ao vivo ela abre a prévia no clique; sem imagem, o espaço fica
+   reservado em vez de sumir — assim os cartões não dançam entre si. */
+.cr-thumb{width:64px;height:64px;border-radius:10px;flex:0 0 auto;overflow:hidden;
+  border:1px solid var(--linha);background:var(--off);display:block;position:relative}
+.cr-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+a.cr-thumb{transition:border-color .14s,transform .14s}
+a.cr-thumb:hover{border-color:var(--orange-dark);transform:scale(1.03)}
+a.cr-thumb:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.cr-thumb.vazio{border:1px dashed var(--linha-forte);display:flex;align-items:center;
+  justify-content:center;color:var(--ink-3);flex-direction:column;gap:3px}
+.cr-thumb.vazio svg{width:20px;height:20px}
+.cr-thumb .fmt{font-size:8.5px;font-weight:700;letter-spacing:.06em}
+.cr-body{flex:1;min-width:0}
+.cr-nome{font-size:14px;font-weight:700;color:var(--ink);line-height:1.35;overflow-wrap:anywhere}
+.cr-mets{display:flex;flex-wrap:wrap;gap:4px 15px;margin-top:9px;font-size:11px;color:var(--ink-3)}
+.cr-mets b{font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;
+  margin-right:4px}
+.cr-zero{font-size:10.5px;color:var(--neg);margin-top:8px;font-weight:700}
+.cr-foot{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:11px}
+.ver{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;
+  color:var(--orange-dark);text-decoration:none;padding:4px 10px;border-radius:8px;
+  border:1px solid rgba(188,76,20,.3);transition:.14s}
+.ver svg{width:12px;height:12px}
+.ver:hover{background:rgba(234,116,57,.09);border-color:var(--orange-dark)}
+.ver:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+
+/* ---------- leitura ---------- */
+.leitura{background:var(--branco);border:1px solid var(--linha);border-radius:15px;
+  padding:20px 22px;box-shadow:var(--sombra)}
+.leitura ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+.leitura li{font-size:14px;line-height:1.6;color:var(--ink-2)}
+.leitura li:first-child{color:var(--ink);font-weight:700;font-size:14.5px}
+.leitura-foot{margin-top:16px;padding-top:14px;border-top:1px solid var(--linha);
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.leitura-foot span{font-size:11.5px;color:var(--ink-3)}
+.aprof{margin-top:16px;padding:14px 16px;background:var(--off);border-radius:11px}
+.aprof .t{font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:8px}
+.aprof ul{gap:7px}
+.aprof li{font-size:12.5px;color:var(--ink-2);padding-left:14px;position:relative;font-weight:400}
+.aprof li::before{content:"\2192";position:absolute;left:0;color:var(--orange-dark);font-weight:700}
+
+.aviso{font-size:12.5px;color:var(--ink-3);background:var(--branco);
+  border:1px dashed var(--linha-forte);border-radius:12px;padding:13px 16px}
+.aviso b{color:var(--ink)}
+
+.foot{margin-top:48px;border-top:1px solid var(--linha-forte);padding-top:22px;
+  font-size:12.5px;color:var(--ink-3);line-height:1.75;display:flex;flex-wrap:wrap;gap:20px;
+  align-items:center;justify-content:space-between}
+.foot .logo{height:30px}
+
+/* ---------- gate e carregamento ---------- */
+.gate-page{position:fixed;inset:0;background:var(--navy);display:flex;align-items:flex-start;
+  justify-content:center;padding:14vh 22px 40px}
+.gate{width:100%;max-width:380px;text-align:center}
+.gate img{height:52px;margin-bottom:26px}
+.gate h1{font-size:22px;margin:0 0 6px}
+.gate p{font-size:13.5px;color:rgba(255,255,255,.72);margin:0 0 22px}
+.gate input{width:100%;font-family:var(--sans);font-size:16px;font-weight:700;text-align:center;
+  color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(249,222,192,.35);
+  border-radius:10px;padding:12px;margin-bottom:12px;letter-spacing:.08em}
+.gate input::placeholder{color:rgba(255,255,255,.4);letter-spacing:.02em}
+.gate .btn{width:100%;padding:12px;justify-content:center;background:var(--orange);color:var(--navy)}
+.gate .erro{color:var(--neg-nv);font-size:12.5px;margin-top:10px;min-height:1.2em}
+.carregando{position:fixed;inset:0;background:var(--off);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:18px;color:var(--ink-3);font-size:14px;
+  text-align:center;padding:0 24px}
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--linha);
+  border-top-color:var(--orange);animation:g .8s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+
+@media (max-width:640px){
+  .hero{padding:28px 22px 26px}
+  .hero-in{flex-direction:column;align-items:flex-start;gap:18px}
+  .hero-meta{align-items:flex-start}
+  .stamp{text-align:left}
+  .placar{padding:20px}
+  .periodo-nota{text-align:left}
+  .seg{width:100%} .seg button{flex:1;padding:9px 10px;font-size:12.5px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(() => {
+"use strict";
+
+const I = {
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+  demo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8" stroke-dasharray="3.5 3.5"/></svg>',
+  refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.9-3M4 13a8 8 0 0 0 14.9 3"/><path d="M20 4v4h-4M4 20v-4h4"/></svg>',
+  calen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M8 3v4M16 3v4M4 11h16"/></svg>',
+  copiar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',
+  fora:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h5v5M19 5l-8 8"/><path d="M19 14v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>',
+  imagem:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.4"/><path d="M21 16l-5-5-6.5 8"/></svg>'
+};
+// usados pelos onerror das imagens, que rodam fora deste escopo
+window.__semImagem = I.imagem;
+window.__semFoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'%3E%3Crect width='56' height='56' fill='%23FAF5F5'/%3E%3Ccircle cx='28' cy='22' r='9' fill='%2377809B'/%3E%3Cpath d='M10 50c2-11 9-16 18-16s16 5 18 16z' fill='%2377809B'/%3E%3C/svg%3E";
+
+// Só para o link do Gerenciador no modo demo — no ao vivo quem resolve é /api/preview.
+const CONTA = '1718135052525631';
+
+/* ============ acesso ============ */
+const app = document.getElementById('app');
+const codigo = () => localStorage.getItem('codigo-painel') || '';
+const cab = () => codigo() ? { 'x-codigo': codigo() } : {};
+
+function telaGate(msg) {
+  app.innerHTML = `<div class="gate-page"><div class="gate">
+    <img src="/assets/case-logo-bege.svg" alt="Case">
+    <h1 style="color:#fff">Painel de Corretores</h1>
+    <p>Digite o código de acesso para abrir o painel.</p>
+    <input id="g-in" type="password" autocomplete="current-password" placeholder="código de acesso">
+    <button class="btn" id="g-ok">Entrar</button>
+    <div class="erro">${msg || ''}</div>
+  </div></div>`;
+  const inp = document.getElementById('g-in');
+  const vai = () => { localStorage.setItem('codigo-painel', inp.value.trim()); carrega(); };
+  document.getElementById('g-ok').addEventListener('click', vai);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') vai(); });
+  inp.focus();
+}
+const telaCarregando = txt =>
+  app.innerHTML = `<div class="carregando"><div class="spin"></div><div>${txt}</div></div>`;
+
+/* ============ formatação ============ */
+const brl  = v => 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const brl0 = v => 'R$ ' + Math.round(Number(v)).toLocaleString('pt-BR');
+const n0   = v => Number(v).toLocaleString('pt-BR');
+const pct1 = v => Number(v).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + '%';
+const esc  = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dt   = d => String(d || '').split('-').reverse().join('/');
+const ROT  = { ok:'saudável', warn:'atenção', bad:'caro', mute:'sem lead' };
+const ROTP = { ok:'saudáveis', warn:'em atenção', bad:'caros', mute:'sem lead' };
+
+// Variação em % a partir dos valores brutos. `menorEhMelhor` inverte a cor:
+// custo que cai é notícia boa. Sem base de comparação, não pinta nada.
+function varHTML(atual, antes, menorEhMelhor) {
+  if (antes == null || !isFinite(antes) || antes === 0 || atual == null) return '';
+  const v = (atual - antes) / antes;
+  const zero = Math.abs(v) < 0.005, sobe = v > 0;
+  const cls = zero ? 'neutro' : (sobe === !menorEhMelhor) ? 'bom' : 'ruim';
+  return `<span class="var ${cls}">${zero ? '=' : sobe ? '▲' : '▼'} ${
+    zero ? 'estável' : Math.abs(Math.round(v*100)) + '%'}</span>`;
+}
+
+/* ============ estado ============ */
+// Todo cálculo derivado (cpl, cliques, taxa, agregados, leitura) vem pronto do
+// payload de /api/corretores — aqui só se formata e desenha.
+// Fonte de verdade do formato: 06-painel/contrato-payload.md.
+let D = null, pedido = { p: '14d' }, ordem = 'cpl', corretorSel = '';
+
+async function carrega(extra) {
+  if (extra) pedido = extra;
+  telaCarregando('Carregando o painel…');
+  const q = new URLSearchParams(pedido);
+  delete pedido.fresh;   // fresh vale para UMA busca; persistir furaria o cache para sempre
+  let r;
+  try { r = await fetch('/api/corretores?' + q, { headers: cab() }); }
+  catch { return telaCarregando('Sem conexão com o servidor. Recarregue a página.'); }
+  if (r.status === 401) return telaGate(codigo() ? 'Código incorreto. Tente de novo.' : '');
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    // 400 de datas é erro local de validação — não é culpa do Meta
+    if (e.erro === 'datas_invalidas' || e.erro === 'datas_comparacao_invalidas')
+      return telaCarregando('Intervalo de datas inválido. Recarregue a página e escolha outro período.');
+    return telaCarregando('O Meta não respondeu agora (' + esc(String(e.detalhe || r.status)) + '). Recarregue em instantes.');
+  }
+  D = await r.json();
+  monta();
+}
+
+/* ============ página ============ */
+function monta() {
+  const demo = D.modo === 'demo';
+  const trava = demo ? 'disabled title="Disponível no modo ao vivo, com o token do Meta configurado"' : '';
+  if (!D.corretores.some(c => c.id === corretorSel))
+    corretorSel = D.corretores.length ? D.corretores[0].id : '';
+
+  app.innerHTML = `
+  <div class="wrap">
+    <header class="hero"><div class="hero-in">
+      <div>
+        <p class="eyebrow">Leads no WhatsApp · corretores</p>
+        <h1>Carlos Carvalho<br><em>Os quatro no ar</em></h1>
+        <p class="lede">Cada corretor pelo <b>custo por lead</b>, contra o mesmo
+        número de dias imediatamente anteriores.</p>
+      </div>
+      <div class="hero-meta">
+        <img class="logo" src="/assets/case-logo-bege.svg" alt="Case Marketing de Performance">
+        <div class="stamp">dados até <b>${dt(D.geradoEm)}</b><br>
+          conta <b>CA - Bridge Moinhos 01</b></div>
+      </div>
+    </div></header>
+
+    ${demo ? `<div class="note"><span class="ico">${I.demo}</span>
+      <span><b>Modo demonstração.</b> Mostrando a janela de ${dt(D.periodo.desde)} a
+      ${dt(D.periodo.ate)}, apurada em ${dt(D.geradoEm)}. Com o token do Meta configurado
+      na hospedagem, o painel busca dado fresco, o filtro de datas é liberado e as
+      miniaturas dos anúncios aparecem — por enquanto, “Ver anúncio” abre o
+      Gerenciador.</span></div>` : ''}
+
+    <div class="note"><span class="ico">${I.info}</span>
+      <span><b>Como ler.</b> <b>Lead</b> aqui é a pessoa que clicou no anúncio e abriu conversa
+      no WhatsApp do corretor — não é venda fechada. A régua de custo por lead vai de
+      <b>até ${brl0(D.regua.verde)}</b> (saudável, verde), passa por <b>${brl0(D.regua.verde)} a ${brl0(D.regua.amarelo)}</b>
+      (atenção, amarelo) e fica <b>cara acima de ${brl0(D.regua.amarelo)}</b> (vermelho).</span></div>
+
+    <section style="margin-top:0">
+      <div class="periodbar">
+        <div class="pb-row">
+          <div class="pb-left">
+            <span class="seg-lbl">Período</span>
+            <div class="seg" id="seg" role="group" aria-label="Seleção de período"></div>
+          </div>
+          <span class="periodo-nota"><b>${esc(D.periodo.titulo)}</b>${
+            D.periodo.nota ? ' · ' + esc(D.periodo.nota) : ''}</span>
+        </div>
+        <div class="pb-row">
+          <div class="cal">
+            <span class="seg-lbl" style="padding:0">Datas</span>
+            <input type="date" id="cal-de" aria-label="Data inicial" value="${D.periodo.desde}"
+              min="2026-01-01" max="${D.geradoEm}" ${demo?'disabled':''}>
+            <span class="ate">até</span>
+            <input type="date" id="cal-ate" aria-label="Data final" value="${D.periodo.ate}"
+              min="2026-01-01" max="${D.geradoEm}" ${demo?'disabled':''}>
+            <button class="btn aplicar" id="cal-ok" ${trava}>${I.calen} Aplicar</button>
+          </div>
+          <button class="btn ghost" id="atualizar" ${trava}>${I.refresh} Atualizar dados</button>
+        </div>
+        <div class="pb-row">
+          <div class="cal">
+            <span class="seg-lbl" style="padding:0">Comparar com</span>
+            <span class="comp-auto"><b>${esc(D.anterior.titulo)}</b>
+              · ${D.anterior.modo === 'manual' ? 'comparação manual'
+                  : 'mesma quantidade de dias, imediatamente antes'}</span>
+            <button class="btn ghost" id="comp-abrir" ${trava}>${I.calen} Escolher outro</button>
+          </div>
+        </div>
+        <div class="pb-row comp-manual" id="comp-manual" ${D.anterior.modo==='manual'?'':'hidden'}>
+          <div class="cal">
+            <span class="seg-lbl" style="padding:0">Período de comparação</span>
+            <input type="date" id="comp-de" aria-label="Comparação: data inicial"
+              value="${D.anterior.desde}" min="2026-01-01" max="${D.geradoEm}">
+            <span class="ate">até</span>
+            <input type="date" id="comp-ate" aria-label="Comparação: data final"
+              value="${D.anterior.ate}" min="2026-01-01" max="${D.geradoEm}">
+            <button class="btn aplicar" id="comp-ok">Aplicar</button>
+            <button class="btn ghost" id="comp-auto-voltar">Voltar ao automático</button>
+          </div>
+        </div>
+      </div>
+      ${placarHTML()}
+    </section>
+
+    <section>
+      <div class="sec-head">
+        <div><h2>Corretores</h2>
+        <p>Do lead mais barato para o mais caro. A marca na régua mostra onde cada um
+        caiu entre R$ 0 e ${brl0(D.regua.teto)} por lead.</p></div>
+        <div class="seg" id="seg-ordem" role="group" aria-label="Ordenar corretores">
+          <button type="button" data-o="cpl"   aria-pressed="${ordem==='cpl'}">Custo</button>
+          <button type="button" data-o="leads" aria-pressed="${ordem==='leads'}">Leads</button>
+          <button type="button" data-o="spend" aria-pressed="${ordem==='spend'}">Investido</button>
+          <button type="button" data-o="delta" aria-pressed="${ordem==='delta'}">Piora</button>
+        </div>
+      </div>
+      <div class="grade" id="grade"></div>
+    </section>
+
+    <section>
+      <div class="sec-head"><div><h2>Leitura visual</h2>
+        <p>Três recortes: como a operação vem evoluindo, como a verba se reparte entre os
+        quatro, e onde cada um ganha ou perde no caminho do anúncio até a conversa.</p></div></div>
+
+      ${D.meses && D.meses.length ? `<div class="cartao">
+        <div class="cartao-topo"><div>
+          <div class="cartao-tit">A operação mês a mês</div>
+          <div class="cartao-sub">Custo por lead em cima, investimento embaixo — escalas separadas
+          de propósito. Inclui as campanhas dos corretores que já saíram: é a curva de aprendizado
+          da conta inteira, não só dos quatro de agora.</div>
+        </div></div>
+        <div class="plot" id="g-mes"></div>
+        <details class="tabmes"><summary>Ver os números do gráfico</summary>
+          <div class="rolagem"><table><thead><tr><th>Mês</th><th>Investido</th><th>Leads</th>
+            <th>Custo por lead</th></tr></thead><tbody>
+            ${D.meses.map(m => `<tr><td>${esc(m.rot)}/2026${m.parcial?' *':''}</td>
+              <td>${brl0(m.spend)}</td><td>${n0(m.leads)}</td>
+              <td>${m.cpl != null ? brl(m.cpl) : '—'}</td></tr>`).join('')}
+          </tbody></table></div>
+          ${D.meses.some(m => m.parcial) ? `<div style="font-size:11px;color:var(--ink-3);
+            margin-top:8px">* mês ainda em andamento, fechado até ${dt(D.geradoEm)}</div>` : ''}
+        </details>
+      </div>` : ''}
+
+      <div class="cartao">
+        <div class="cartao-topo">
+          <div>
+            <div class="cartao-tit">Onde foi a verba, de onde vieram os leads</div>
+            <div class="cartao-sub">Fatia de cada corretor no total. Quando a barra de leads é mais
+            curta que a de verba, aquele corretor consome mais do que devolve.</div>
+          </div>
+          <div class="legenda">
+            <span><i style="background:#4660AA"></i>verba</span>
+            <span><i style="background:#BC4C14"></i>leads</span>
+          </div>
+        </div>
+        <div class="plot" id="g-part"></div>
+      </div>
+
+      <div class="cartao">
+        <div class="cartao-topo"><div>
+          <div class="cartao-tit">De cada 100 cliques, quantos viraram conversa</div>
+          <div class="cartao-sub">Clique é quem tocou no anúncio; conversa é quem chegou no WhatsApp.
+          A distância entre os dois mostra o que o anúncio promete e a conversa não sustenta — ou o
+          contrário: quem atrai menos clique pode estar atraindo o clique certo.</div>
+        </div></div>
+        <div class="plot" id="g-funil"></div>
+      </div>
+    </section>
+
+    ${D.corretores.length ? `<section>
+      <div class="sec-head">
+        <div><h2>Anúncios</h2>
+        <p id="cr-sub"></p></div>
+        <label class="sel-uni">
+          <span>Corretor</span>
+          <select id="cr-uni" aria-label="Filtrar anúncios por corretor">
+            ${D.corretores.map(c =>
+              `<option value="${esc(c.id)}" ${c.id===corretorSel?'selected':''}>${esc(c.nome)}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+      <div class="crs" id="crs"></div>
+    </section>` : ''}
+
+    <section>
+      <div class="sec-head"><div><h2>Leitura do período</h2></div></div>
+      <div class="leitura">
+        <ul>${(D.leitura || []).map(l => `<li>${esc(l)}</li>`).join('')}</ul>
+        ${D.aprofundar && D.aprofundar.length ? `<div class="aprof">
+          <div class="t">Vale aprofundar</div>
+          <ul>${D.aprofundar.map(l => `<li>${esc(l)}</li>`).join('')}</ul></div>` : ''}
+        <div class="leitura-foot">
+          <button class="btn ghost" id="copiar">${I.copiar} Copiar para o WhatsApp</button>
+          <span id="copia-ok"></span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span>Lead é a conversa aberta no WhatsApp do corretor, não a venda fechada.
+      Valores em reais.</span>
+      <img class="logo" src="/assets/case-logo-navy.svg" alt="Case Marketing de Performance">
+    </footer>
+  </div>`;
+
+  montaSeletor(); pintaGrade(); pintaCriativos(); ligaControles(); pintaGraficos();
+}
+
+/* ============ placar ============ */
+function placarHTML() {
+  const r = D.rede, a = r.ant;
+  return `<div class="placar">
+    <div class="pl">
+      <span class="rot">Custo por lead</span>
+      <span class="n destaque">${r.cpl != null ? brl(r.cpl) : '—'}</span>
+      <span class="sub">${a ? varHTML(r.cpl, a.cpl, true) : ''}
+        ${a && a.cpl != null ? ` contra ${brl(a.cpl)}` : ''}</span>
+    </div>
+    <div class="pl">
+      <span class="rot">Leads</span>
+      <span class="n">${n0(r.leads)}</span>
+      <span class="sub">${a ? varHTML(r.leads, a.leads, false) : ''}
+        ${a ? ` contra <b>${n0(a.leads)}</b>` : ''}</span>
+    </div>
+    <div class="pl">
+      <span class="rot">Investido</span>
+      <span class="n">${brl0(r.spend)}</span>
+      <span class="sub">${a ? varHTML(r.spend, a.spend, false) : ''}
+        ${a ? ` contra <b>${brl0(a.spend)}</b>` : ''}</span>
+    </div>
+    <div class="pl">
+      <span class="rot">Corretores no ar</span>
+      <span class="n">${D.corretores.length}</span>
+      <div class="semaforo">
+        ${['ok','warn','bad','mute'].filter(k => r.faixas[k]).map(k =>
+          `<span class="sf ${k}"><span class="dot"></span>${r.faixas[k]} ${
+            r.faixas[k]===1?ROT[k]:ROTP[k]}</span>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============ cartões ============ */
+function reguaHTML(v) {
+  const { verde, amarelo, teto } = D.regua;
+  const wV = verde/teto*100, wA = (amarelo-verde)/teto*100;
+  const p = v != null ? Math.min(98.6, v/teto*100) : null;
+  return `<div class="regua">
+    <div class="regua-track">
+      <i style="width:${wV}%;background:rgba(33,135,77,.32)"></i>
+      <i style="width:${wA}%;background:rgba(234,179,8,.40)"></i>
+      <i style="width:${100-wV-wA}%;background:rgba(239,0,0,.16)"></i>
+      ${p != null ? `<span class="regua-mark" style="left:${p}%"></span>` : ''}
+    </div>
+    <div class="regua-scale"><span class="ini">R$ 0</span>
+      <span class="fim">${v != null && v > teto ? 'acima de ' + brl0(teto) : brl0(teto)}</span></div>
+  </div>`;
+}
+
+function ordenadas() {
+  const u = D.corretores.slice(), sem = x => x.cpl == null;
+  if (ordem === 'leads') return u.sort((a,b) => b.leads - a.leads);
+  if (ordem === 'spend') return u.sort((a,b) => b.spend - a.spend);
+  if (ordem === 'delta') {
+    // "Piora" = quem mais encareceu contra o período anterior. Sem base, vai pro fim.
+    const dl = c => (c.ant && c.ant.cpl != null && c.cpl != null)
+      ? (c.cpl - c.ant.cpl) / c.ant.cpl : -1e12;   // finita: dois sem base empatam sem NaN
+    return u.sort((a,b) => dl(b) - dl(a));
+  }
+  return u.sort((a,b) => sem(a) !== sem(b) ? (sem(a) ? 1 : -1) : (a.cpl||0) - (b.cpl||0));
+}
+
+function pintaGrade() {
+  document.getElementById('grade').innerHTML = ordenadas().map((c, i) => {
+    const mute = c.cpl == null;
+    // mute = gastou e ninguém abriu conversa. O cartão diz que o corretor sumiu,
+    // não finge que ele não existe.
+    const frase = c.leads
+      ? `De cada 100 cliques no anúncio, <b>${Math.round(c.taxaConversa)}</b> viraram
+         conversa no WhatsApp.`
+      : (c.cliques
+        ? `Teve ${n0(c.cliques)} clique${c.cliques === 1 ? '' : 's'} no período e nenhum virou conversa no WhatsApp.`
+        : `Sem entrega registrada no período.`);
+    // nota explica ausência de variação — estreia já tem chip próprio
+    const nota = (!c.estreia && c.ant && !c.ant.leads && c.leads)
+      ? 'sem lead no período anterior' : '';
+    return `<article class="u ${esc(c.status)}">
+      <div class="u-top">
+        <div class="u-quem">
+          <img class="retrato" src="/assets/corretores/${esc(c.foto)}" alt="${esc(c.nome)}"
+            onerror="this.onerror=null;this.src=window.__semFoto">
+          <div style="min-width:0">
+            <div class="u-nome">${esc(c.nome)}</div>
+            <div class="u-chips">
+              <span class="chip" title="${esc(c.pracas)}">${esc(c.praca)}</span>
+              ${c.estreia ? '<span class="chip novo">estreou</span>' : ''}
+            </div>
+          </div>
+        </div>
+        <span class="pos">${i+1}</span>
+      </div>
+      <div class="u-cpr">
+        <span class="n">${mute ? 'sem lead' : brl(c.cpl)}</span>
+        ${c.ant ? varHTML(c.cpl, c.ant.cpl, true) : ''}
+        <span class="l">${mute ? 'nenhuma conversa aberta no período'
+          : `por lead · ${ROT[c.status] || ''}`}</span>
+      </div>
+      ${reguaHTML(c.cpl)}
+      <div class="u-linha2">
+        <span><b>${n0(c.leads)}</b>lead${c.leads===1?'':'s'}
+          ${c.ant ? varHTML(c.leads, c.ant.leads, false) : ''}</span>
+        <span><b>${brl0(c.spend)}</b>investido</span>
+      </div>
+      <div class="u-frase">${frase}</div>
+      ${nota ? `<div class="u-ant">${esc(nota)}</div>` : ''}
+    </article>`;
+  }).join('');
+}
+
+/* ============ criativos ============ */
+function pintaCriativos() {
+  const host = document.getElementById('crs');
+  if (!host) return;
+  const cQ = codigo() ? '&c=' + encodeURIComponent(codigo()) : '';
+  const aoVivo = D.modo === 'ao-vivo';
+  const corretor = D.corretores.find(x => x.id === corretorSel);
+  const lista = (D.criativos && D.criativos[corretorSel]) || [];
+  const zerados = lista.filter(x => !x.leads);
+  const perdido = zerados.reduce((s,x) => s + x.spend, 0);
+
+  const sub = document.getElementById('cr-sub');
+  if (sub) sub.textContent = lista.length
+    ? `${lista.length} anúncio${lista.length===1?'':'s'} com entrega na campanha de `
+      + `${corretor ? corretor.nome : ''} no período, do que mais trouxe lead para o que `
+      + `menos trouxe.`
+      + (perdido ? ` ${zerados.length} ${zerados.length===1?'gastou':'gastaram'} ${brl(perdido)} sem trazer nenhum.` : '')
+      + (aoVivo ? ' "Ver anúncio" abre a prévia oficial do Meta.' : '')
+    : '';
+
+  if (!lista.length) {
+    host.innerHTML = `<div class="aviso">Nenhum anúncio com entrega nesta campanha no período.</div>`;
+    return;
+  }
+
+  host.innerHTML = lista.map((x, i) => {
+    const ad = encodeURIComponent(x.adId);
+    const fmt = x.nome.slice(0, 3).toUpperCase();
+    const destaque = x.cpl != null && x.cpl < D.regua.verde / 2;
+    const verHref = aoVivo
+      ? `/api/preview?ad=${ad}${cQ}`
+      : `https://business.facebook.com/adsmanager/manage/ads?act=${CONTA}&selected_ad_ids=${ad}`;
+    return `<article class="cr ${destaque ? 'destaque' : ''} ${x.leads ? '' : 'zerado'}">
+      <span class="cr-rank">${i+1}</span>
+      ${aoVivo
+        ? `<a class="cr-thumb" href="/api/preview?ad=${ad}${cQ}" target="_blank"
+             rel="noopener noreferrer" title="Ver o anúncio">
+             <img loading="lazy" alt="Miniatura do anúncio ${esc(x.nome)}"
+                  src="/api/thumb?ad=${ad}${cQ}"
+                  onerror="this.parentElement.classList.add('vazio');
+                           this.parentElement.innerHTML=window.__semImagem;this.remove()"></a>`
+        : `<span class="cr-thumb vazio" title="A miniatura aparece no modo ao vivo">
+             ${I.imagem}<span class="fmt">${esc(fmt)}</span></span>`}
+      <div class="cr-body">
+        <div class="cr-nome">${esc(x.nome)}</div>
+        ${destaque ? '<div class="cr-tag">lead barato</div>' : ''}
+        <div class="cr-mets">
+          <span><b>${n0(x.leads)}</b>lead${x.leads===1?'':'s'}</span>
+          <span><b>${x.cpl != null ? brl(x.cpl) : '—'}</b>cada</span>
+          <span><b>${brl0(x.spend)}</b>investido</span>
+          <span><b>${pct1(x.ctr)}</b>CTR</span>
+        </div>
+        ${x.leads ? '' : '<div class="cr-zero">Gastou e não trouxe lead.</div>'}
+        <div class="cr-foot">
+          <a class="ver" href="${verHref}" target="_blank" rel="noopener noreferrer">
+            Ver anúncio ${I.fora}</a>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+/* ============ gráficos ============ */
+/* SVG à mão, sem biblioteca. Uma escala por painel; cor de dado é dado; todo valor
+   também existe em texto, então nada depende de o leitor enxergar cor. */
+const NS = 'http://www.w3.org/2000/svg';
+const el = (t, a) => { const n = document.createElementNS(NS, t);
+  for (const k in a) n.setAttribute(k, a[k]); return n; };
+const tx = (x, y, s, a = {}) => { const t = el('text', { x, y, ...a }); t.textContent = s; return t; };
+
+const C = {
+  verba:'#4660AA', leads:'#BC4C14',
+  ok:'#21874D', warn:'#8A6D00', bad:'#EF0000',
+  grade:'rgba(26,36,71,.10)', eixo:'rgba(26,36,71,.26)', texto:'#77809B',
+  tinta:'#3E4763', linha:'#1A2447', ultimo:'#EA7439',
+  fxOk:'rgba(33,135,77,.07)', fxWarn:'rgba(234,179,8,.12)', fxBad:'rgba(239,0,0,.045)'
+};
+
+function ticks(max) {
+  const bruto = max / 4.2, mag = Math.pow(10, Math.floor(Math.log10(bruto || 1)));
+  const passo = [1,2,2.5,5,10].map(x => x*mag).find(x => x >= bruto) || 10*mag;
+  const out = []; for (let v = 0; v <= max + 1e-9; v += passo) out.push(+v.toFixed(6));
+  return out;
+}
+// ticks() pode devolver um último tick MENOR que o maior valor da série
+// (ticks(24.6) -> [0,10,20]). Aí a barra estoura o plot e o rótulo sai da tela.
+// escala() mantém os ticks como rótulos, mas estica o domínio até cobrir o dado.
+function escala(maxValor, folga = 1.12) {
+  const tk = ticks(maxValor * folga);
+  return { tk, max: Math.max(tk[tk.length - 1] || 1, maxValor * 1.04) };
+}
+function novoPlot(host, W, H, aria) {
+  host.innerHTML = '';
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, role:'img', 'aria-label':aria });
+  host.appendChild(svg);
+  return svg;
+}
+
+/* ---- 1. mês a mês: dois painéis, duas escalas ---- */
+function grafMeses(host, W) {
+  // cpl vem pronto do payload; mês sem lead fica sem ponto na linha, não vira NaN
+  const ms = (D.meses || []).map(m => ({ ...m,
+    cpl: m.cpl != null ? m.cpl : (m.leads ? m.spend / m.leads : null) }));
+  if (!ms.length) return;
+  const PADL = 62, PADR = 26, PADT = 22, GAP = 30, PADB = 24;
+  const HA = 132, HB = 70;
+  const H = PADT + HA + GAP + HB + PADB, IW = W - PADL - PADR, n = ms.length;
+  const svg = novoPlot(host, W, H, 'Custo por lead e investimento da conta, mês a mês');
+  const banda = IW / n, X = i => PADL + banda * i + banda/2;
+
+  const comCpl = ms.filter(m => m.cpl != null);
+  const { tk: tkA, max: maxA } = escala(Math.max(1, ...comCpl.map(m => m.cpl)), 1.18);
+  const YA = v => PADT + HA - (v/maxA) * HA;
+
+  [[0, D.regua.verde, C.fxOk], [D.regua.verde, D.regua.amarelo, C.fxWarn],
+   [D.regua.amarelo, maxA, C.fxBad]].forEach(([a,b,cor]) => {
+    if (b <= a) return;
+    const y1 = YA(Math.min(b, maxA)), y2 = YA(a);
+    svg.appendChild(el('rect', { x:PADL, y:y1, width:IW, height:Math.max(0, y2-y1), fill:cor }));
+  });
+  tkA.forEach(v => {
+    svg.appendChild(el('line', { x1:PADL, x2:PADL+IW, y1:YA(v), y2:YA(v),
+      stroke: v === 0 ? C.eixo : C.grade, 'stroke-width':1 }));
+    svg.appendChild(tx(PADL-9, YA(v)+3.5, brl0(v), { 'text-anchor':'end', fill:C.texto, 'font-size':10 }));
+  });
+  svg.appendChild(tx(PADL, PADT-10, 'custo por lead', { fill:C.texto, 'font-size':10, 'font-weight':700 }));
+
+  const pts = ms.map((m,i) => m.cpl != null ? { x:X(i), y:YA(m.cpl), i } : null).filter(Boolean);
+  svg.appendChild(el('path', { d: pts.map((p,k) => (k?'L':'M')+p.x+' '+p.y).join(' '),
+    fill:'none', stroke:C.linha, 'stroke-width':2, 'stroke-linejoin':'round', 'stroke-linecap':'round' }));
+  pts.forEach(p => svg.appendChild(el('circle', { cx:p.x, cy:p.y, r:4.5,
+    fill: p.i === n-1 ? C.ultimo : C.linha, stroke:'#fff', 'stroke-width':2 })));
+  // rótulo em todos os pontos: são poucos, e a queda é a história do gráfico
+  pts.forEach(p => svg.appendChild(tx(p.x, p.y - 12, brl0(ms[p.i].cpl),
+    { 'text-anchor':'middle', fill:C.tinta, 'font-size':11.5, 'font-weight':700,
+      stroke:'#fff', 'stroke-width':3.5, 'paint-order':'stroke' })));
+
+  const topoB = PADT + HA + GAP;
+  const maxB = Math.max(...ms.map(m => m.spend)) * 1.12 || 1;
+  const YB = v => topoB + HB - (v/maxB) * HB;
+  svg.appendChild(el('line', { x1:PADL, x2:PADL+IW, y1:topoB+HB, y2:topoB+HB,
+    stroke:C.eixo, 'stroke-width':1 }));
+  svg.appendChild(tx(PADL, topoB-6, 'investido', { fill:C.texto, 'font-size':10, 'font-weight':700 }));
+  const topoTick = Math.max(...ms.map(m => m.spend));
+  svg.appendChild(el('line', { x1:PADL, x2:PADL+IW, y1:YB(topoTick), y2:YB(topoTick),
+    stroke:C.grade, 'stroke-width':1 }));
+  svg.appendChild(tx(PADL-9, YB(topoTick)+3.5, brl0(topoTick), { 'text-anchor':'end', fill:C.texto, 'font-size':10 }));
+  svg.appendChild(tx(PADL-9, topoB+HB+3.5, 'R$ 0', { 'text-anchor':'end', fill:C.texto, 'font-size':10 }));
+  const larg = Math.min(30, Math.max(10, banda - 30));
+  ms.forEach((m,i) => {
+    const y = YB(m.spend);
+    svg.appendChild(el('rect', { x:X(i)-larg/2, y, width:larg, height:Math.max(2, topoB+HB-y),
+      rx:4, ry:4, fill:C.verba, opacity: m.parcial ? .45 : 1 }));
+  });
+
+  ms.forEach((m,i) => svg.appendChild(tx(X(i), H-7, m.rot + (m.parcial ? '*' : ''),
+    { 'text-anchor':'middle', fill:C.texto, 'font-size':10.5 })));
+}
+
+/* ---- 2. participação: verba × leads ---- */
+function grafParticipacao(host, W) {
+  const totS = D.rede.spend || 0, totL = D.rede.leads || 0;
+  const dd = D.corretores.map(c => ({ nome:c.nome, spend:c.spend, leadsN:c.leads,
+      verba: totS ? c.spend / totS * 100 : 0, leads: totL ? c.leads / totL * 100 : 0 }))
+    .sort((a,b) => (b.leads - b.verba) - (a.leads - a.verba));
+  if (!dd.length) return;
+
+  const PADL = Math.min(140, Math.max(96, W*0.16)), PADR = 58, PADT = 6, PADB = 26;
+  const linhaH = 42, barH = 13, vao = 3;
+  const H = PADT + dd.length*linhaH + PADB, IW = W - PADL - PADR;
+  const { tk, max } = escala(Math.max(1, ...dd.flatMap(d => [d.verba, d.leads])), 1.1);
+  const X = v => PADL + (v/max) * IW;
+  const svg = novoPlot(host, W, H, 'Fatia de cada corretor na verba e nos leads');
+
+  tk.forEach(v => {
+    svg.appendChild(el('line', { x1:X(v), x2:X(v), y1:PADT, y2:PADT+dd.length*linhaH,
+      stroke: v === 0 ? C.eixo : C.grade, 'stroke-width':1 }));
+    svg.appendChild(tx(X(v), H-9, v+'%', { 'text-anchor':'middle', fill:C.texto, 'font-size':10.5 }));
+  });
+
+  dd.forEach((d,i) => {
+    const y = PADT + i*linhaH, meio = y + linhaH/2;
+    svg.appendChild(tx(PADL-11, meio+3.5, d.nome,
+      { 'text-anchor':'end', fill:C.tinta, 'font-size':12, 'font-weight':700 }));
+    const yV = meio - barH - vao/2, yL = meio + vao/2;
+    svg.appendChild(el('rect', { x:PADL, y:yV, width:Math.max(1, X(d.verba)-PADL),
+      height:barH, rx:4, ry:4, fill:C.verba }));
+    svg.appendChild(el('rect', { x:PADL, y:yL, width:Math.max(1, X(d.leads)-PADL),
+      height:barH, rx:4, ry:4, fill:C.leads }));
+    svg.appendChild(tx(X(d.verba)+7, yV+barH-2, d.verba.toFixed(0)+'%',
+      { fill:C.texto, 'font-size':10.5 }));
+    svg.appendChild(tx(X(d.leads)+7, yL+barH-2, d.leads.toFixed(0)+'%',
+      { fill:C.tinta, 'font-size':11, 'font-weight':700 }));
+  });
+}
+
+/* ---- 3. taxa de clique que vira conversa ---- */
+/* A fatia que vira conversa é pequena. Desenhada dentro da barra de cliques ela
+   vira um fio invisível e o gráfico passa a depender do número escrito ao lado.
+   Plotando a taxa em si, a barra volta a carregar a informação. */
+function grafFunil(host, W) {
+  const dd = D.corretores.map(c => ({ nome:c.nome, cliques:c.cliques, leads:c.leads,
+      taxa: c.taxaConversa || 0 }))
+    .sort((a,b) => b.taxa - a.taxa);
+  if (!dd.length) return;
+
+  const PADL = Math.min(140, Math.max(96, W*0.16)), PADR = 152, PADT = 8, PADB = 30;
+  const linhaH = 48, barH = 20;
+  const H = PADT + dd.length*linhaH + PADB, IW = W - PADL - PADR;
+  const { tk, max } = escala(Math.max(1, ...dd.map(d => d.taxa)));
+  const X = v => PADL + (v/max) * IW;
+  const media = D.rede.cliques ? D.rede.leads / D.rede.cliques * 100 : 0;
+  const svg = novoPlot(host, W, H, 'Percentual de cliques que viraram conversa, por corretor');
+
+  tk.forEach(v => {
+    svg.appendChild(el('line', { x1:X(v), x2:X(v), y1:PADT, y2:PADT+dd.length*linhaH,
+      stroke: v === 0 ? C.eixo : C.grade, 'stroke-width':1 }));
+    svg.appendChild(tx(X(v), H-11, v+'%', { 'text-anchor':'middle', fill:C.texto, 'font-size':10.5 }));
+  });
+
+  // média da operação: a referência que diz quem está acima e quem está abaixo
+  if (media > 0) {
+    svg.appendChild(el('line', { x1:X(media), x2:X(media), y1:PADT, y2:PADT+dd.length*linhaH,
+      stroke:C.linha, 'stroke-width':1.5, 'stroke-dasharray':'4 3' }));
+    svg.appendChild(tx(X(media), H-11, 'média ' + media.toFixed(0) + '%',
+      { 'text-anchor':'middle', fill:C.linha, 'font-size':10.5, 'font-weight':700,
+        stroke:'#fff', 'stroke-width':3.5, 'paint-order':'stroke' }));
+  }
+
+  dd.forEach((d,i) => {
+    const y = PADT + i*linhaH, meio = y + linhaH/2;
+    svg.appendChild(tx(PADL-11, meio-1, d.nome,
+      { 'text-anchor':'end', fill:C.tinta, 'font-size':12, 'font-weight':700 }));
+    svg.appendChild(tx(PADL-11, meio+13, n0(d.cliques) + ' cliques · ' + n0(d.leads) + ' conversas',
+      { 'text-anchor':'end', fill:C.texto, 'font-size':10 }));
+    svg.appendChild(el('rect', { x:PADL, y:meio-barH/2, width:Math.max(2, X(d.taxa)-PADL),
+      height:barH, rx:5, ry:5, fill: media > 0 && d.taxa >= media ? C.ok : C.leads }));
+    // halo branco: o rótulo pode cair em cima da linha tracejada da média
+    svg.appendChild(tx(X(d.taxa)+9, meio+6, d.taxa.toFixed(0) + ' de cada 100',
+      { fill:C.tinta, 'font-size':12, 'font-weight':700,
+        stroke:'#fff', 'stroke-width':3.5, 'paint-order':'stroke' }));
+  });
+}
+
+// Medir DEPOIS que a página inteira existe: medir durante a montagem faz o
+// primeiro cartão se medir com a linha toda e sair achatado.
+function pintaGraficos() {
+  [['g-mes', grafMeses], ['g-part', grafParticipacao], ['g-funil', grafFunil]]
+    .forEach(([id, fn]) => {
+      const host = document.getElementById(id);
+      if (!host) return;
+      fn(host, Math.max(340, Math.round(host.clientWidth) || 860));
+    });
+}
+
+/* ============ controles ============ */
+function montaSeletor() {
+  const seg = document.getElementById('seg');
+  const demo = D.modo === 'demo';
+  const atual = pedido.p || (pedido.desde ? 'custom' : '14d');
+  seg.innerHTML = (D.prontos || []).map(p =>
+    `<button type="button" data-id="${esc(p.id)}" aria-pressed="${p.id===atual}"
+      ${demo ? 'disabled title="Disponível no modo ao vivo, com o token do Meta configurado"' : ''}>
+      ${esc(p.botao)}</button>`).join('') +
+    (atual === 'custom' ? `<button type="button" data-id="custom" aria-pressed="true">Personalizado</button>` : '');
+  if (!demo) seg.onclick = e => {
+    const b = e.target.closest('button');
+    if (b && b.dataset.id !== 'custom') carrega({ p: b.dataset.id });
+  };
+}
+
+function ligaControles() {
+  document.getElementById('seg-ordem').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    ordem = b.dataset.o;
+    b.parentElement.querySelectorAll('button').forEach(x =>
+      x.setAttribute('aria-pressed', String(x.dataset.o === ordem)));
+    pintaGrade();
+  };
+
+  const ok = document.getElementById('cal-ok');
+  if (ok && !ok.disabled) ok.onclick = () => {
+    const de = document.getElementById('cal-de').value, ate = document.getElementById('cal-ate').value;
+    if (!de || !ate || de > ate) return alert('Escolha um intervalo válido de datas.');
+    carrega({ desde: de, ate });
+  };
+
+  const at = document.getElementById('atualizar');
+  if (at && !at.disabled) at.onclick = () => carrega({ ...pedido, fresh: '1' });
+
+  // Comparação. Trocar o período principal descarta a comparação manual de
+  // propósito: uma comparação escolhida para julho não faz sentido em agosto.
+  const abrir = document.getElementById('comp-abrir');
+  if (abrir && !abrir.disabled) abrir.onclick = () => {
+    const box = document.getElementById('comp-manual');
+    box.hidden = !box.hidden;
+    if (!box.hidden) document.getElementById('comp-de').focus();
+  };
+  const cok = document.getElementById('comp-ok');
+  if (cok) cok.onclick = () => {
+    const de = document.getElementById('comp-de').value,
+          ate = document.getElementById('comp-ate').value;
+    if (!de || !ate || de > ate) return alert('Escolha um intervalo válido para a comparação.');
+    carrega({ ...pedido, cdesde: de, cate: ate });
+  };
+  const cvolta = document.getElementById('comp-auto-voltar');
+  if (cvolta) cvolta.onclick = () => {
+    const q = { ...pedido }; delete q.cdesde; delete q.cate;
+    carrega(q);
+  };
+
+  const selUni = document.getElementById('cr-uni');
+  if (selUni) selUni.onchange = () => { corretorSel = selUni.value; pintaCriativos(); };
+
+  document.getElementById('copiar').onclick = async () => {
+    const txt = `*Bridge Moinhos · painel de corretores*\n${D.periodo.titulo}\n\n` +
+      (D.leitura || []).map(l => '• ' + l).join('\n\n') +
+      (D.aprofundar && D.aprofundar.length
+        ? `\n\n*Vale aprofundar:*\n` + D.aprofundar.map(l => '→ ' + l).join('\n') : '');
+    const aviso = document.getElementById('copia-ok');
+    try { await navigator.clipboard.writeText(txt); aviso.textContent = 'Copiado.'; }
+    catch { aviso.textContent = 'Não consegui copiar — selecione o texto acima.'; }
+    setTimeout(() => aviso.textContent = '', 2500);
+  };
+}
+
+let rt;
+addEventListener('resize', () => { clearTimeout(rt);
+  rt = setTimeout(() => { if (D) pintaGraficos(); }, 160); });
+
+carrega();
+})();
+</script>
+</body>
+</html>
