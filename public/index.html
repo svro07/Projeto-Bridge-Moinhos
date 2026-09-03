@@ -172,8 +172,9 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .u.mute{border-left:3px solid var(--ink-3)}
 .u-top{display:flex;align-items:flex-start;gap:12px;justify-content:space-between}
 .u-quem{display:flex;gap:12px;align-items:center;min-width:0}
-/* O rosto é o ponto do cartão: o projeto do Carlos é sobre corretor, não sobre campanha.
-   96px é o teto que a menor foto original (227px) sustenta em tela retina. */
+/* O rosto é o ponto do cartão: o projeto do Carlos é sobre corretor, não sobre
+   campanha. 80px porque o cartão agora ocupa meia largura — e é o que a menor
+   foto de origem (227px) sustenta com folga em tela retina. */
 .retrato{width:80px;height:80px;border-radius:50%;flex:0 0 auto;object-fit:cover;
   border:2px solid var(--branco);box-shadow:0 0 0 1px var(--linha-forte);background:var(--off)}
 .u-nome{font-size:19px;font-weight:700;letter-spacing:-.018em;color:var(--ink);line-height:1.2;
@@ -195,7 +196,7 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
   font-variant-numeric:tabular-nums}
 .u.ok .u-cpr .n{color:var(--pos)} .u.warn .u-cpr .n{color:var(--atn)}
 .u.bad .u-cpr .n{color:var(--neg)}
-.u.mute .u-cpr .n{color:var(--ink-3);font-size:21px}
+.u.mute .u-cpr .n{color:var(--neg);font-size:clamp(26px,4.2vw,32px)}
 .u-cpr .l{font-size:10.5px;color:var(--ink-3);width:100%;margin-top:2px}
 
 .regua{margin-top:12px}
@@ -211,16 +212,18 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 
 /* Leads e investido são o que o Carlos confere depois do custo — ganham peso de
    número, não de rodapé: rótulo pequeno em cima, valor grande embaixo. */
-.u-linha2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;padding-top:12px;
-  border-top:1px solid var(--linha)}
+.u-linha2{display:grid;grid-template-columns:auto auto;justify-content:start;gap:0 46px;
+  margin-top:14px;padding-top:12px;border-top:1px solid var(--linha)}
 .met{display:flex;flex-direction:column;gap:2px;min-width:0}
 .met .rot{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--ink-3)}
+  color:var(--ink-2)}   /* --ink-3 dava 3,9:1 sobre branco: abaixo do mínimo AA */
 .met .val{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
-.met .val b{font-size:23px;font-weight:700;letter-spacing:-.03em;line-height:1.05;
-  color:var(--ink);font-variant-numeric:tabular-nums}
+/* acompanha o clamp do herói: fixo em 23px, a diferença caía para 1,3x no
+   celular e o custo por lead deixava de se impor como número principal */
+.met .val b{font-size:clamp(19px,3.4vw,23px);font-weight:700;letter-spacing:-.03em;
+  line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums}
 /* A frase em português é para o Carlos. O número cru já está acima, para o gestor. */
-.u-frase{font-size:11px;color:var(--ink-3);margin-top:9px;line-height:1.5}
+.u-frase{font-size:11px;color:var(--ink-3);margin-top:auto;padding-top:9px;line-height:1.5}
 .u-frase b{color:var(--ink-2);font-weight:700;font-variant-numeric:tabular-nums}
 /* A nota só sobrevive quando explica uma AUSÊNCIA de variação: sem ela, cartão
    sem porcentagem parece dado faltando. */
@@ -256,8 +259,8 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 
 /* ---------- criativos ---------- */
 /* Escolha de corretor por toque, com a foto — mais rápido de achar que nome em
-   lista, e sem estado pré-selecionado que pareça aleatório. Nada aparece até o
-   Carlos tocar em alguém (ou em Todos). */
+   lista. Abre em "Todos" (a porta de entrada, primeira pílula) e o toque num
+   rosto aprofunda num corretor só. */
 .corr-pills{display:flex;flex-wrap:wrap;gap:8px}
 .pill{appearance:none;display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);
   font-size:13.5px;font-weight:700;color:var(--ink-2);background:var(--branco);
@@ -268,6 +271,7 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .pill:hover{border-color:var(--navy);color:var(--ink)}
 .pill[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:var(--navy)}
 .pill:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.cr-mais{grid-column:1/-1;display:flex;justify-content:center;margin-top:2px}
 .cr-dono{font-size:11.5px;color:var(--ink-3);margin-top:3px}
 .cr-dono b{color:var(--ink-2);font-weight:700}
 .crs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:14px}
@@ -437,6 +441,14 @@ const pct1 = v => Number(v).toLocaleString('pt-BR',{minimumFractionDigits:1,maxi
 const esc  = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dt   = d => String(d || '').split('-').reverse().join('/');
 const ROT  = { ok:'saudável', warn:'atenção', bad:'caro', mute:'sem lead' };
+// a primeira frase da seção precisa acompanhar o botão de ordem, senão promete
+// "do mais barato para o mais caro" enquanto a lista está ordenada por outra coisa
+const ORDEM_TXT = {
+  cpl:   'Do lead mais barato para o mais caro.',
+  leads: 'De quem trouxe mais leads para quem trouxe menos.',
+  spend: 'De quem mais investiu para quem menos investiu.',
+  delta: 'De quem mais encareceu para quem menos encareceu.'
+};
 const ROTP = { ok:'saudáveis', warn:'em atenção', bad:'caros', mute:'sem lead' };
 
 // Variação em % a partir dos valores brutos. `menorEhMelhor` inverte a cor:
@@ -454,7 +466,7 @@ function varHTML(atual, antes, menorEhMelhor) {
 // Todo cálculo derivado (cpl, cliques, taxa, agregados, leitura) vem pronto do
 // payload de /api/corretores — aqui só se formata e desenha.
 // Fonte de verdade do formato: 06-painel/contrato-payload.md.
-let D = null, pedido = { p: '14d' }, ordem = 'cpl', corretorSel = 'todos';
+let D = null, pedido = { p: '14d' }, ordem = 'cpl', corretorSel = 'todos', verTudo = false;
 
 async function carrega(extra) {
   if (extra) pedido = extra;
@@ -590,7 +602,7 @@ function monta() {
     <section>
       <div class="sec-head">
         <div><h2>Corretores</h2>
-        <p>Do lead mais barato para o mais caro. A marca na régua mostra onde cada um
+        <p>${ORDEM_TXT[ordem] || ORDEM_TXT.cpl} A marca na régua mostra onde cada um
         caiu entre R$ 0 e ${brl0(D.regua.teto)} por lead.</p></div>
         <div class="seg" id="seg-ordem" role="group" aria-label="Ordenar corretores">
           <button type="button" data-o="cpl"   aria-pressed="${ordem==='cpl'}">Custo</button>
@@ -608,20 +620,21 @@ function monta() {
         <p id="cr-sub"></p></div>
       </div>
       <div class="corr-pills" id="cr-pills" role="group" aria-label="Escolher de quem ver os anúncios">
+        <button type="button" class="pill todos" data-id="todos"
+          aria-pressed="${corretorSel==='todos'}">Todos</button>
         ${D.corretores.map(c => `<button type="button" class="pill" data-id="${esc(c.id)}"
             aria-pressed="${c.id===corretorSel}">
             <img src="/assets/corretores/${esc(c.foto)}" alt=""
               onerror="this.onerror=null;this.src=window.__semFoto">${esc(c.nome)}</button>`).join('')}
-        <button type="button" class="pill todos" data-id="todos"
-          aria-pressed="${corretorSel==='todos'}">Todos</button>
       </div>
       <div class="crs" id="crs"></div>
     </section>` : ''}
 
     <section>
       <div class="sec-head"><div><h2>Leitura visual</h2>
-        <p>Três recortes: como a operação vem evoluindo, como a verba se reparte entre os
-        quatro, e onde cada um ganha ou perde no caminho do anúncio até a conversa.</p></div></div>
+        <p>Os ${D.corretores.length} corretores vistos de outro jeito: como a conta vem evoluindo
+        mês a mês, como a verba se reparte entre eles, e quantas conversas cada um abre a
+        cada 100 cliques.</p></div></div>
 
       ${D.meses && D.meses.length ? `<div class="cartao">
         <div class="cartao-topo"><div>
@@ -799,7 +812,7 @@ function pintaGrade() {
         <div class="met"><span class="rot">Leads</span>
           <span class="val"><b>${n0(c.leads)}</b>${c.ant ? varHTML(c.leads, c.ant.leads, false) : ''}</span></div>
         <div class="met"><span class="rot">Investido</span>
-          <span class="val"><b>${brl0(c.spend)}</b></span></div>
+          <span class="val"><b>${brl0(c.spend)}</b>${c.ant ? varHTML(c.spend, c.ant.spend, false) : ''}</span></div>
       </div>
       <div class="u-frase">${frase}</div>
       ${nota ? `<div class="u-ant">${esc(nota)}</div>` : ''}
@@ -815,15 +828,6 @@ function pintaCriativos() {
   const aoVivo = D.modo === 'ao-vivo';
   const sub = document.getElementById('cr-sub');
 
-  // sem escolha, sem anúncio: um convite no lugar de uma lista que parece aleatória
-  if (!corretorSel) {
-    if (sub) sub.textContent = '';
-    host.innerHTML = `<div class="aviso"><b>Toque na foto de um corretor aí em cima</b> para ver
-      os anúncios que estão rodando para ele — ou toque em “Todos” para ver os anúncios dos
-      quatro juntos.</div>`;
-    return;
-  }
-
   const todos = corretorSel === 'todos';
   const corretor = todos ? null : D.corretores.find(x => x.id === corretorSel);
   const lista = todos
@@ -836,21 +840,30 @@ function pintaCriativos() {
 
   if (sub) sub.textContent = lista.length
     ? (todos
-        ? `Os anúncios dos ${D.corretores.length} corretores no período, do que mais trouxe lead ` +
-          `para o que menos trouxe — com o dono de cada um.`
-        : `${lista.length} anúncio${lista.length===1?'':'s'} com entrega na campanha de ` +
-          `${corretor ? corretor.nome : ''} no período, do que mais trouxe lead para o que ` +
+        ? `Os ${lista.length} anúncios que rodaram para os ${D.corretores.length} corretores no ` +
+          `período, do que mais trouxe lead para o que menos trouxe. Toque na foto de um ` +
+          `corretor para ver só os dele.`
+        : `${lista.length} anúncio${lista.length===1?'':'s'} que ${lista.length===1?'rodou':'rodaram'} ` +
+          `para ${corretor ? corretor.nome : ''} no período, do que mais trouxe lead para o que ` +
           `menos trouxe.`)
       + (perdido ? ` ${zerados.length} ${zerados.length===1?'gastou':'gastaram'} ${brl(perdido)} sem trazer nenhum.` : '')
       + (aoVivo ? ' “Ver anúncio” abre a prévia oficial do Meta.' : '')
     : '';
 
   if (!lista.length) {
-    host.innerHTML = `<div class="aviso">Nenhum anúncio com entrega nesta campanha no período.</div>`;
+    host.innerHTML = `<div class="aviso">Nenhum anúncio rodou ${
+      todos ? 'no período' : 'para este corretor no período'}.</div>`;
     return;
   }
 
-  host.innerHTML = lista.map((x, i) => {
+  // Em "Todos" a lista inteira ocupa metade da página no celular e empurra as
+  // duas seções de leitura para o fim da rolagem. Mostra as primeiras e o resto
+  // fica a um toque — ver um corretor específico sempre traz a lista completa.
+  const TETO = 8;
+  const cortada = todos && !verTudo && lista.length > TETO;
+  const visiveis = cortada ? lista.slice(0, TETO) : lista;
+
+  host.innerHTML = visiveis.map((x, i) => {
     const ad = encodeURIComponent(x.adId);
     const fmt = x.nome.slice(0, 3).toUpperCase();
     const destaque = x.cpl != null && x.cpl < D.regua.verde / 2;
@@ -876,7 +889,7 @@ function pintaCriativos() {
           <span><b>${n0(x.leads)}</b>lead${x.leads===1?'':'s'}</span>
           <span><b>${x.cpl != null ? brl(x.cpl) : '—'}</b>cada</span>
           <span><b>${brl0(x.spend)}</b>investido</span>
-          <span><b>${pct1(x.ctr)}</b>CTR</span>
+          <span><b>${pct1(x.ctr)}</b>tocaram</span>
         </div>
         ${x.leads ? '' : '<div class="cr-zero">Gastou e não trouxe lead.</div>'}
         <div class="cr-foot">
@@ -885,7 +898,13 @@ function pintaCriativos() {
         </div>
       </div>
     </article>`;
-  }).join('');
+  }).join('') + (cortada
+    ? `<div class="cr-mais"><button type="button" class="btn ghost" id="cr-ver-tudo">
+         Ver os outros ${lista.length - TETO} anúncios</button></div>`
+    : '');
+
+  const maisBtn = document.getElementById('cr-ver-tudo');
+  if (maisBtn) maisBtn.onclick = () => { verTudo = true; pintaCriativos(); };
 }
 
 /* ============ gráficos ============ */
@@ -1032,7 +1051,7 @@ function grafFunil(host, W) {
     .sort((a,b) => b.taxa - a.taxa);
   if (!dd.length) return;
 
-  const PADL = Math.min(140, Math.max(96, W*0.16)), PADR = 152, PADT = 8, PADB = 30;
+  const PADL = Math.min(150, Math.max(104, W*0.16)), PADR = 152, PADT = 8, PADB = 30;
   const linhaH = 48, barH = 20;
   const H = PADT + dd.length*linhaH + PADB, IW = W - PADL - PADR;
   const { tk, max } = escala(Math.max(1, ...dd.map(d => d.taxa)));
@@ -1040,10 +1059,14 @@ function grafFunil(host, W) {
   const media = D.rede.cliques ? D.rede.leads / D.rede.cliques * 100 : 0;
   const svg = novoPlot(host, W, H, 'Percentual de cliques que viraram conversa, por corretor');
 
+  // a etiqueta da média divide a faixa do eixo com os ticks: o tick perto demais
+  // some, senão os dois se sobrepõem e viram "0%média 7%" em tela estreita
+  const mediaX = media > 0 ? X(media) : null;
   tk.forEach(v => {
     svg.appendChild(el('line', { x1:X(v), x2:X(v), y1:PADT, y2:PADT+dd.length*linhaH,
       stroke: v === 0 ? C.eixo : C.grade, 'stroke-width':1 }));
-    svg.appendChild(tx(X(v), H-11, v+'%', { 'text-anchor':'middle', fill:C.texto, 'font-size':10.5 }));
+    if (mediaX == null || Math.abs(X(v) - mediaX) > 34)
+      svg.appendChild(tx(X(v), H-11, v+'%', { 'text-anchor':'middle', fill:C.texto, 'font-size':10.5 }));
   });
 
   // média da operação: a referência que diz quem está acima e quem está abaixo
@@ -1059,11 +1082,13 @@ function grafFunil(host, W) {
     const y = PADT + i*linhaH, meio = y + linhaH/2;
     svg.appendChild(tx(PADL-11, meio-1, d.nome,
       { 'text-anchor':'end', fill:C.tinta, 'font-size':12, 'font-weight':700 }));
-    // em tela estreita a margem esquerda não comporta o rótulo inteiro — e um
-    // rótulo cortado ("ques · 19 conversas") é pior do que um mais curto
-    svg.appendChild(tx(PADL-11, meio+13,
-      W < 520 ? n0(d.cliques) + ' cliques'
-              : n0(d.cliques) + ' cliques · ' + n0(d.leads) + ' conversas',
+    // O rótulo é ancorado à direita em PADL-11: se não couber na margem, o SVG
+    // corta pela ESQUERDA e "87 cliques" vira "7 cliques" — número errado na tela.
+    // Por isso o limiar é a margem real disponível, não uma largura de tela fixa.
+    const margem = PADL - 11, LONGO = 120;
+    svg.appendChild(tx(margem, meio+13,
+      margem < LONGO ? n0(d.cliques) + ' cliques'
+                     : n0(d.cliques) + ' cliques · ' + n0(d.leads) + ' conversas',
       { 'text-anchor':'end', fill:C.texto, 'font-size':10 }));
     svg.appendChild(el('rect', { x:PADL, y:meio-barH/2, width:Math.max(2, X(d.taxa)-PADL),
       height:barH, rx:5, ry:5, fill: media > 0 && d.taxa >= media ? C.ok : C.leads }));
@@ -1107,6 +1132,8 @@ function ligaControles() {
     ordem = b.dataset.o;
     b.parentElement.querySelectorAll('button').forEach(x =>
       x.setAttribute('aria-pressed', String(x.dataset.o === ordem)));
+    const p = document.querySelector('#seg-ordem').closest('.sec-head').querySelector('p');
+    if (p) p.firstChild.textContent = (ORDEM_TXT[ordem] || ORDEM_TXT.cpl) + ' ';
     pintaGrade();
   };
 
@@ -1144,7 +1171,7 @@ function ligaControles() {
   const pills = document.getElementById('cr-pills');
   if (pills) pills.onclick = e => {
     const b = e.target.closest('button'); if (!b) return;
-    corretorSel = b.dataset.id;
+    corretorSel = b.dataset.id; verTudo = false;
     pills.querySelectorAll('button').forEach(x =>
       x.setAttribute('aria-pressed', String(x.dataset.id === corretorSel)));
     pintaCriativos();
