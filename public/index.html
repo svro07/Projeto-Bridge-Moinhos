@@ -159,9 +159,9 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .placar .var.neutro{color:rgba(255,255,255,.6)}
 
 /* ---------- cartões de corretor ---------- */
-/* Um cartão por linha, sempre: o Carlos lê no celular, rolando — como um feed.
-   No desktop os cartões ficam largos e respiram, em vez de virar mosaico. */
-.grade{display:flex;flex-direction:column;gap:14px}
+/* Dois por linha no desktop, um por linha no celular. Com quatro corretores,
+   2x2 fecha um quadrado — a página encurta e o cartão para de sobrar espaço. */
+.grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .u{background:var(--branco);border:1px solid var(--linha);border-radius:14px;
   padding:18px 20px 16px;box-shadow:var(--sombra);display:flex;flex-direction:column;
   transition:border-color .15s}
@@ -209,10 +209,16 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .regua-scale span{position:absolute;top:0;white-space:nowrap}
 .regua-scale .ini{left:0}.regua-scale .fim{right:0}
 
-.u-linha2{display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:11px;padding-top:10px;
-  border-top:1px solid var(--linha);font-size:11px;color:var(--ink-3)}
-.u-linha2 b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;margin-right:4px;
-  font-size:15px}
+/* Leads e investido são o que o Carlos confere depois do custo — ganham peso de
+   número, não de rodapé: rótulo pequeno em cima, valor grande embaixo. */
+.u-linha2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;padding-top:12px;
+  border-top:1px solid var(--linha)}
+.met{display:flex;flex-direction:column;gap:2px;min-width:0}
+.met .rot{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-3)}
+.met .val{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.met .val b{font-size:23px;font-weight:700;letter-spacing:-.03em;line-height:1.05;
+  color:var(--ink);font-variant-numeric:tabular-nums}
 /* A frase em português é para o Carlos. O número cru já está acima, para o gestor. */
 .u-frase{font-size:11px;color:var(--ink-3);margin-top:9px;line-height:1.5}
 .u-frase b{color:var(--ink-2);font-weight:700;font-variant-numeric:tabular-nums}
@@ -363,6 +369,7 @@ a.cr-thumb:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
   border-top-color:var(--orange);animation:g .8s linear infinite}
 @keyframes g{to{transform:rotate(360deg)}}
 
+@media (max-width:760px){ .grade{grid-template-columns:1fr} }
 @media (max-width:640px){
   .hero{padding:28px 22px 26px}
   .retrato{width:64px;height:64px}
@@ -447,7 +454,7 @@ function varHTML(atual, antes, menorEhMelhor) {
 // Todo cálculo derivado (cpl, cliques, taxa, agregados, leitura) vem pronto do
 // payload de /api/corretores — aqui só se formata e desenha.
 // Fonte de verdade do formato: 06-painel/contrato-payload.md.
-let D = null, pedido = { p: '14d' }, ordem = 'cpl', corretorSel = '';
+let D = null, pedido = { p: '14d' }, ordem = 'cpl', corretorSel = 'todos';
 
 async function carrega(extra) {
   if (extra) pedido = extra;
@@ -473,9 +480,10 @@ async function carrega(extra) {
 function monta() {
   const demo = D.modo === 'demo';
   const trava = demo ? 'disabled title="Disponível no modo ao vivo, com o token do Meta configurado"' : '';
-  // nada vem pré-selecionado: anúncio só aparece depois de um toque consciente
-  if (corretorSel && corretorSel !== 'todos' && !D.corretores.some(c => c.id === corretorSel))
-    corretorSel = '';
+  // abre em "Todos" e o toque numa foto aprofunda num corretor; se o corretor
+  // escolhido sumiu do roster, volta para a visão geral em vez de esvaziar
+  if (corretorSel !== 'todos' && !D.corretores.some(c => c.id === corretorSel))
+    corretorSel = 'todos';
 
   app.innerHTML = `
   <div class="wrap">
@@ -594,6 +602,22 @@ function monta() {
       <div class="grade" id="grade"></div>
     </section>
 
+    ${D.corretores.length ? `<section>
+      <div class="sec-head">
+        <div><h2>Anúncios</h2>
+        <p id="cr-sub"></p></div>
+      </div>
+      <div class="corr-pills" id="cr-pills" role="group" aria-label="Escolher de quem ver os anúncios">
+        ${D.corretores.map(c => `<button type="button" class="pill" data-id="${esc(c.id)}"
+            aria-pressed="${c.id===corretorSel}">
+            <img src="/assets/corretores/${esc(c.foto)}" alt=""
+              onerror="this.onerror=null;this.src=window.__semFoto">${esc(c.nome)}</button>`).join('')}
+        <button type="button" class="pill todos" data-id="todos"
+          aria-pressed="${corretorSel==='todos'}">Todos</button>
+      </div>
+      <div class="crs" id="crs"></div>
+    </section>` : ''}
+
     <section>
       <div class="sec-head"><div><h2>Leitura visual</h2>
         <p>Três recortes: como a operação vem evoluindo, como a verba se reparte entre os
@@ -644,22 +668,6 @@ function monta() {
         <div class="plot" id="g-funil"></div>
       </div>
     </section>
-
-    ${D.corretores.length ? `<section>
-      <div class="sec-head">
-        <div><h2>Anúncios</h2>
-        <p id="cr-sub"></p></div>
-      </div>
-      <div class="corr-pills" id="cr-pills" role="group" aria-label="Escolher de quem ver os anúncios">
-        ${D.corretores.map(c => `<button type="button" class="pill" data-id="${esc(c.id)}"
-            aria-pressed="${c.id===corretorSel}">
-            <img src="/assets/corretores/${esc(c.foto)}" alt=""
-              onerror="this.onerror=null;this.src=window.__semFoto">${esc(c.nome)}</button>`).join('')}
-        <button type="button" class="pill todos" data-id="todos"
-          aria-pressed="${corretorSel==='todos'}">Todos</button>
-      </div>
-      <div class="crs" id="crs"></div>
-    </section>` : ''}
 
     <section>
       <details class="leitura-wrap">
@@ -788,9 +796,10 @@ function pintaGrade() {
       </div>
       ${reguaHTML(c.cpl)}
       <div class="u-linha2">
-        <span><b>${n0(c.leads)}</b>lead${c.leads===1?'':'s'}
-          ${c.ant ? varHTML(c.leads, c.ant.leads, false) : ''}</span>
-        <span><b>${brl0(c.spend)}</b>investido</span>
+        <div class="met"><span class="rot">Leads</span>
+          <span class="val"><b>${n0(c.leads)}</b>${c.ant ? varHTML(c.leads, c.ant.leads, false) : ''}</span></div>
+        <div class="met"><span class="rot">Investido</span>
+          <span class="val"><b>${brl0(c.spend)}</b></span></div>
       </div>
       <div class="u-frase">${frase}</div>
       ${nota ? `<div class="u-ant">${esc(nota)}</div>` : ''}
