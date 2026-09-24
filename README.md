@@ -84,8 +84,12 @@ bridge-moinhos/
 │   ├── historico-chat-original.pdf ← export da conversa que originou tudo
 │   └── README.md
 │
-└── 05-templates/                   ← modelos reutilizáveis
-    └── planilha-de-leads.md        ← estrutura da planilha de qualificação
+├── 05-templates/                   ← modelos reutilizáveis
+│   └── planilha-de-leads.md        ← estrutura da planilha de qualificação
+│
+└── 07-criativos/                   ← peças prontas para anúncio (PNG final)
+    ├── imovel-parcao-4x5.png       ← estático 4:5 (1080×1350) do imóvel em frente ao Parcão
+    └── fonte/                      ← HTML + fotos de cada peça, para editar e renderizar de novo
 ```
 
 ---
