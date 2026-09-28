@@ -157,6 +157,9 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .var{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;
   font-variant-numeric:tabular-nums;white-space:nowrap}
 .var.bom{color:var(--pos)} .var.ruim{color:var(--neg)} .var.neutro{color:var(--ink-3)}
+/* Só dentro do cartão: no placar do topo a variação divide a linha com outros
+   números e a caixa é outra — lá 12,5px continua certo. */
+.u .var{font-size:13.5px}
 .placar .var.bom{color:var(--pos-nv)} .placar .var.ruim{color:var(--neg-nv)}
 .placar .var.neutro{color:rgba(255,255,255,.6)}
 
@@ -186,29 +189,33 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .retratos{display:flex;flex:0 0 auto}
 .retratos .retrato + .retrato{margin-left:-26px}
 .retratos .retrato:first-child{z-index:1}
-.u-nome{font-size:19px;font-weight:700;letter-spacing:-.018em;color:var(--ink);line-height:1.2;
+.u-nome{font-size:21px;font-weight:700;letter-spacing:-.018em;color:var(--ink);line-height:1.2;
   overflow-wrap:anywhere}
-.u-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;min-height:18px}
-.chip{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  padding:2px 6px;border-radius:5px;background:var(--off);color:var(--ink-3);
-  border:1px solid var(--linha);white-space:nowrap}
+.u-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;min-height:20px}
+.chip{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  padding:3px 7px;border-radius:5px;background:var(--off);color:var(--ink-3);
+  border:1px solid var(--linha)}
+/* Sem nowrap de propósito: como .u-chips é flex-wrap, a tag pula para a linha
+   seguinte ANTES de quebrar o texto — e, no celular estreito, encolher a tag é
+   melhor que empurrar o cartão para fora da tela ("aguardando campanha" travava
+   183px de largura mínima e gerava scroll lateral em 360px). */
 .chip.novo{color:var(--blue-2);background:rgba(70,96,170,.08);border-color:rgba(70,96,170,.22)}
 /* classificação pela régua, com a mesma cor do semáforo do placar */
 .chip.ok{color:var(--pos);background:rgba(33,135,77,.10);border-color:rgba(33,135,77,.28)}
 .chip.warn{color:var(--atn);background:rgba(234,179,8,.14);border-color:rgba(138,109,0,.30)}
 .chip.bad{color:var(--neg);background:rgba(239,0,0,.07);border-color:rgba(239,0,0,.28)}
 .chip.espera{color:var(--ink-3);background:var(--off);border-color:var(--linha-forte)}
-.pos{font-size:11.5px;font-weight:700;color:var(--ink-3);background:var(--off);
-  border:1px solid var(--linha);border-radius:7px;width:25px;height:25px;flex:0 0 auto;
+.pos{font-size:12.5px;font-weight:700;color:var(--ink-3);background:var(--off);
+  border:1px solid var(--linha);border-radius:7px;width:27px;height:27px;flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
-.u-cpr{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:13px}
-.u-cpr .n{font-size:clamp(30px,5vw,38px);font-weight:700;letter-spacing:-.042em;line-height:1;
+.u-cpr{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-top:14px}
+.u-cpr .n{font-size:clamp(33px,5.4vw,41px);font-weight:700;letter-spacing:-.042em;line-height:1;
   font-variant-numeric:tabular-nums}
 .u.ok .u-cpr .n{color:var(--pos)} .u.warn .u-cpr .n{color:var(--atn)}
 .u.bad .u-cpr .n{color:var(--neg)}
-.u.mute .u-cpr .n{color:var(--neg);font-size:clamp(26px,4.2vw,32px)}
-.u.espera .u-cpr .n{color:var(--ink-3);font-size:clamp(20px,3.2vw,24px)}
-.u-cpr .l{font-size:10.5px;color:var(--ink-3);width:100%;margin-top:2px}
+.u.mute .u-cpr .n{color:var(--neg);font-size:clamp(28px,4.4vw,34px)}
+.u.espera .u-cpr .n{color:var(--ink-3);font-size:clamp(22px,3.4vw,26px)}
+.u-cpr .l{font-size:12px;color:var(--ink-3);width:100%;margin-top:3px}
 
 .regua{margin-top:12px}
 .regua-track{position:relative;height:8px;border-radius:5px;overflow:hidden;display:flex;
@@ -216,30 +223,31 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .regua-track i{display:block;height:100%}
 .regua-mark{position:absolute;top:-4px;width:3px;height:16px;border-radius:2px;background:var(--navy);
   box-shadow:0 0 0 2px #fff;transform:translateX(-1.5px)}
-.regua-scale{position:relative;height:13px;margin-top:5px;font-size:10px;color:var(--ink-3);
+.regua-scale{position:relative;height:15px;margin-top:6px;font-size:11px;color:var(--ink-3);
   font-variant-numeric:tabular-nums}
 .regua-scale span{position:absolute;top:0;white-space:nowrap}
 .regua-scale .ini{left:0}.regua-scale .fim{right:0}
 
 /* Leads e investido são o que o Carlos confere depois do custo — ganham peso de
    número, não de rodapé: rótulo pequeno em cima, valor grande embaixo. */
-.u-linha2{display:grid;grid-template-columns:auto auto;justify-content:start;gap:0 46px;
+.u-linha2{display:grid;grid-template-columns:auto auto;justify-content:start;gap:0 clamp(30px,4.6vw,48px);
   margin-top:14px;padding-top:12px;border-top:1px solid var(--linha)}
 .met{display:flex;flex-direction:column;gap:2px;min-width:0}
-.met .rot{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+.met .rot{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink-2)}   /* --ink-3 dava 3,9:1 sobre branco: abaixo do mínimo AA */
 .met .val{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
-/* acompanha o clamp do herói: fixo em 23px, a diferença caía para 1,3x no
-   celular e o custo por lead deixava de se impor como número principal */
-.met .val b{font-size:clamp(19px,3.4vw,23px);font-weight:700;letter-spacing:-.03em;
+/* acompanha o clamp do herói em vez de tamanho fixo: com valor fixo, a diferença
+   para o custo por lead caía para 1,3x no celular e ele deixava de se impor como
+   número principal do cartão */
+.met .val b{font-size:clamp(21px,3.6vw,26px);font-weight:700;letter-spacing:-.03em;
   line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums}
 /* A frase em português é para o Carlos. O número cru já está acima, para o gestor. */
-.u-frase{font-size:11px;color:var(--ink-3);margin-top:auto;padding-top:9px;line-height:1.5}
+.u-frase{font-size:12.5px;color:var(--ink-3);margin-top:auto;padding-top:10px;line-height:1.52}
 .u.espera .u-frase{margin-top:14px;padding-top:12px;border-top:1px solid var(--linha)}
 .u-frase b{color:var(--ink-2);font-weight:700;font-variant-numeric:tabular-nums}
 /* A nota só sobrevive quando explica uma AUSÊNCIA de variação: sem ela, cartão
    sem porcentagem parece dado faltando. */
-.u-ant{font-size:10px;color:var(--ink-3);margin-top:7px;font-variant-numeric:tabular-nums}
+.u-ant{font-size:11px;color:var(--ink-3);margin-top:8px;font-variant-numeric:tabular-nums}
 
 /* ---------- gráficos ---------- */
 .cartao{background:var(--branco);border:1px solid var(--linha);border-radius:15px;
@@ -385,7 +393,7 @@ a.cr-thumb:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
   border-top-color:var(--orange);animation:g .8s linear infinite}
 @keyframes g{to{transform:rotate(360deg)}}
 
-@media (max-width:760px){ .grade{grid-template-columns:1fr} }
+@media (max-width:860px){ .grade{grid-template-columns:1fr} }
 @media (max-width:640px){
   .hero{padding:28px 22px 26px}
   .retrato{width:64px;height:64px}

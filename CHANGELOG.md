@@ -57,6 +57,24 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
 - Corretores definidos: ...
 -->
 
+### [2026-09-28] Cartões de corretor — tipografia ampliada
+
+- **Motivo:** o gestor que acompanha os corretores lê o painel junto com o Carlos;
+  os rótulos de apoio do cartão estavam em 10–11px, pequenos demais para leitura
+  rápida em celular.
+- **O que subiu:** nome do corretor 19→21px; tags 10,5→11,5px; custo por lead
+  38→41px (topo do clamp); o rótulo "por lead" 10,5→12px; "LEADS"/"INVESTIDO"
+  10→11,5px e seus valores 23→26px; a frase em português 11→12,5px. O menor texto
+  dentro do cartão passou de 10px para 11px.
+- **O que a mudança obrigou a corrigir:** as tags perderam o `white-space:nowrap`.
+  Com texto maior, "aguardando campanha" travava 183px de largura mínima e
+  empurrava a página para fora da tela em aparelhos de 360px. Como `.u-chips` é
+  flex-wrap, a tag pula de linha antes de quebrar o texto — o visual só muda
+  quando não há espaço. Isso também eliminou um scroll lateral que já existia
+  em 320px.
+- **Uma coluna a partir de 860px** (era 760px): com o texto maior, dois cartões
+  lado a lado no tablet espremiam nome e tags contra o retrato.
+
 ### [2026-09-28] Rotação de corretores no painel
 
 - **Saiu:** Sandra (campanha pausada no Gerenciador em 17/09).
