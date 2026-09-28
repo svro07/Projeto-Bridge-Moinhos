@@ -149,8 +149,10 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .sf.warn .dot{background:var(--atn-nv)}
 .sf.bad{color:var(--neg-nv);border-color:rgba(255,133,133,.4);background:rgba(255,133,133,.12)}
 .sf.bad .dot{background:var(--neg-nv)}
-.sf.mute{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.07)}
-.sf.mute .dot{background:rgba(255,255,255,.6)}
+.sf.mute{color:var(--neg-nv);border-color:rgba(255,133,133,.4);background:rgba(255,133,133,.12)}
+.sf.mute .dot{background:var(--neg-nv)}
+.sf.espera{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.07)}
+.sf.espera .dot{background:rgba(255,255,255,.6)}
 
 .var{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;
   font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -169,7 +171,9 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .u.bad{border-left:3px solid var(--neg)}
 .u.warn{border-left:3px solid var(--atn-vivo)}
 .u.ok{border-left:3px solid var(--pos)}
-.u.mute{border-left:3px solid var(--ink-3)}
+.u.mute{border-left:3px solid var(--neg)}
+.u.espera{border-left:3px solid var(--ink-3)}
+.u.espera .retrato{filter:grayscale(1);opacity:.62}
 .u-top{display:flex;align-items:flex-start;gap:12px;justify-content:space-between}
 .u-quem{display:flex;gap:12px;align-items:center;min-width:0}
 /* O rosto é o ponto do cartão: o projeto do Carlos é sobre corretor, não sobre
@@ -177,6 +181,11 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
    foto de origem (227px) sustenta com folga em tela retina. */
 .retrato{width:80px;height:80px;border-radius:50%;flex:0 0 auto;object-fit:cover;
   border:2px solid var(--branco);box-shadow:0 0 0 1px var(--linha-forte);background:var(--off)}
+/* Dupla que atende junta divide um cartão: os rostos se sobrepõem um pouco,
+   como avatar de grupo, para caber no espaço de um e ainda lerem como dois. */
+.retratos{display:flex;flex:0 0 auto}
+.retratos .retrato + .retrato{margin-left:-26px}
+.retratos .retrato:first-child{z-index:1}
 .u-nome{font-size:19px;font-weight:700;letter-spacing:-.018em;color:var(--ink);line-height:1.2;
   overflow-wrap:anywhere}
 .u-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;min-height:18px}
@@ -188,6 +197,7 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .chip.ok{color:var(--pos);background:rgba(33,135,77,.10);border-color:rgba(33,135,77,.28)}
 .chip.warn{color:var(--atn);background:rgba(234,179,8,.14);border-color:rgba(138,109,0,.30)}
 .chip.bad{color:var(--neg);background:rgba(239,0,0,.07);border-color:rgba(239,0,0,.28)}
+.chip.espera{color:var(--ink-3);background:var(--off);border-color:var(--linha-forte)}
 .pos{font-size:11.5px;font-weight:700;color:var(--ink-3);background:var(--off);
   border:1px solid var(--linha);border-radius:7px;width:25px;height:25px;flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
@@ -197,6 +207,7 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .u.ok .u-cpr .n{color:var(--pos)} .u.warn .u-cpr .n{color:var(--atn)}
 .u.bad .u-cpr .n{color:var(--neg)}
 .u.mute .u-cpr .n{color:var(--neg);font-size:clamp(26px,4.2vw,32px)}
+.u.espera .u-cpr .n{color:var(--ink-3);font-size:clamp(20px,3.2vw,24px)}
 .u-cpr .l{font-size:10.5px;color:var(--ink-3);width:100%;margin-top:2px}
 
 .regua{margin-top:12px}
@@ -224,6 +235,7 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
   line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums}
 /* A frase em português é para o Carlos. O número cru já está acima, para o gestor. */
 .u-frase{font-size:11px;color:var(--ink-3);margin-top:auto;padding-top:9px;line-height:1.5}
+.u.espera .u-frase{margin-top:14px;padding-top:12px;border-top:1px solid var(--linha)}
 .u-frase b{color:var(--ink-2);font-weight:700;font-variant-numeric:tabular-nums}
 /* A nota só sobrevive quando explica uma AUSÊNCIA de variação: sem ela, cartão
    sem porcentagem parece dado faltando. */
@@ -440,7 +452,7 @@ const n0   = v => Number(v).toLocaleString('pt-BR');
 const pct1 = v => Number(v).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + '%';
 const esc  = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dt   = d => String(d || '').split('-').reverse().join('/');
-const ROT  = { ok:'saudável', warn:'atenção', bad:'caro', mute:'sem lead' };
+const ROT  = { ok:'saudável', warn:'atenção', bad:'caro', mute:'sem lead', espera:'aguardando campanha' };
 // a primeira frase da seção precisa acompanhar o botão de ordem, senão promete
 // "do mais barato para o mais caro" enquanto a lista está ordenada por outra coisa
 const ORDEM_TXT = {
@@ -449,7 +461,7 @@ const ORDEM_TXT = {
   spend: 'De quem mais investiu para quem menos investiu.',
   delta: 'De quem mais encareceu para quem menos encareceu.'
 };
-const ROTP = { ok:'saudáveis', warn:'em atenção', bad:'caros', mute:'sem lead' };
+const ROTP = { ok:'saudáveis', warn:'em atenção', bad:'caros', mute:'sem lead', espera:'aguardando campanha' };
 
 // Variação em % a partir dos valores brutos. `menorEhMelhor` inverte a cor:
 // custo que cai é notícia boa. Sem base de comparação, não pinta nada.
@@ -624,7 +636,7 @@ function monta() {
           aria-pressed="${corretorSel==='todos'}">Todos</button>
         ${D.corretores.map(c => `<button type="button" class="pill" data-id="${esc(c.id)}"
             aria-pressed="${c.id===corretorSel}">
-            <img src="/assets/corretores/${esc(c.foto)}" alt=""
+            <img src="/assets/corretores/${esc((c.fotos || [])[0] || '')}" alt=""
               onerror="this.onerror=null;this.src=window.__semFoto">${esc(c.nome)}</button>`).join('')}
       </div>
       <div class="crs" id="crs"></div>
@@ -733,9 +745,9 @@ function placarHTML() {
     </div>
     <div class="pl">
       <span class="rot">Corretores no ar</span>
-      <span class="n">${D.corretores.length}</span>
+      <span class="n">${D.corretores.length - (r.faixas.espera || 0)}</span>
       <div class="semaforo">
-        ${['ok','warn','bad','mute'].filter(k => r.faixas[k]).map(k =>
+        ${['ok','warn','bad','mute','espera'].filter(k => r.faixas[k]).map(k =>
           `<span class="sf ${k}"><span class="dot"></span>${r.faixas[k]} ${
             r.faixas[k]===1?ROT[k]:ROTP[k]}</span>`).join('')}
       </div>
@@ -775,27 +787,32 @@ function ordenadas() {
 
 function pintaGrade() {
   document.getElementById('grade').innerHTML = ordenadas().map((c, i) => {
-    const mute = c.cpl == null;
-    // mute = gastou e ninguém abriu conversa. O cartão diz que o corretor sumiu,
-    // não finge que ele não existe.
-    const frase = c.leads
-      ? `De cada 100 cliques no anúncio, <b>${Math.round(c.taxaConversa)}</b> viraram
-         conversa no WhatsApp.`
-      : (c.cliques
-        ? `Teve ${n0(c.cliques)} clique${c.cliques === 1 ? '' : 's'} no período e nenhum virou conversa no WhatsApp.`
-        : `Sem entrega registrada no período.`);
+    const espera = c.status === 'espera';   // ainda não tem campanha no ar
+    const mute = !espera && c.cpl == null;   // gastou e ninguém abriu conversa
+    const frase = espera
+      ? `A campanha ainda não subiu no gerenciador. Assim que entrar no ar, os números
+         aparecem aqui sozinhos.`
+      : c.leads
+        ? `De cada 100 cliques no anúncio, <b>${Math.round(c.taxaConversa)}</b> viraram
+           conversa no WhatsApp.`
+        : (c.cliques
+          ? `Teve ${n0(c.cliques)} clique${c.cliques === 1 ? '' : 's'} no período e nenhum virou conversa no WhatsApp.`
+          : `Sem entrega registrada no período.`);
     // nota explica ausência de variação — estreia já tem chip próprio
     const nota = (!c.estreia && c.ant && !c.ant.leads && c.leads)
       ? 'sem lead no período anterior' : '';
     return `<article class="u ${esc(c.status)}">
       <div class="u-top">
         <div class="u-quem">
-          <img class="retrato" src="/assets/corretores/${esc(c.foto)}" alt="${esc(c.nome)}"
-            onerror="this.onerror=null;this.src=window.__semFoto">
+          <span class="retratos">${(c.fotos || []).map((f, k) =>
+            `<img class="retrato" src="/assets/corretores/${esc(f)}"
+               alt="${k === 0 ? esc(c.nome) : ''}"
+               onerror="this.onerror=null;this.src=window.__semFoto">`).join('')}</span>
           <div style="min-width:0">
             <div class="u-nome">${esc(c.nome)}</div>
             <div class="u-chips">
               ${mute ? '' : `<span class="chip ${esc(c.status)}">${ROT[c.status] || ''}</span>`}
+              ${c.praca ? `<span class="chip" title="${esc(c.pracas)}">${esc(c.praca)}</span>` : ''}
               ${c.estreia ? '<span class="chip novo">estreou</span>' : ''}
             </div>
           </div>
@@ -803,17 +820,18 @@ function pintaGrade() {
         <span class="pos">${i+1}</span>
       </div>
       <div class="u-cpr">
-        <span class="n">${mute ? 'sem lead' : brl(c.cpl)}</span>
+        <span class="n">${espera ? 'ainda sem campanha' : mute ? 'sem lead' : brl(c.cpl)}</span>
         ${c.ant ? varHTML(c.cpl, c.ant.cpl, true) : ''}
-        <span class="l">${mute ? 'nenhuma conversa aberta no período' : 'por lead'}</span>
+        <span class="l">${espera ? 'entra no painel assim que a campanha subir'
+          : mute ? 'nenhuma conversa aberta no período' : 'por lead'}</span>
       </div>
-      ${reguaHTML(c.cpl)}
-      <div class="u-linha2">
+      ${espera ? '' : reguaHTML(c.cpl)}
+      ${espera ? '' : `<div class="u-linha2">
         <div class="met"><span class="rot">Leads</span>
           <span class="val"><b>${n0(c.leads)}</b>${c.ant ? varHTML(c.leads, c.ant.leads, false) : ''}</span></div>
         <div class="met"><span class="rot">Investido</span>
           <span class="val"><b>${brl0(c.spend)}</b>${c.ant ? varHTML(c.spend, c.ant.spend, false) : ''}</span></div>
-      </div>
+      </div>`}
       <div class="u-frase">${frase}</div>
       ${nota ? `<div class="u-ant">${esc(nota)}</div>` : ''}
     </article>`;

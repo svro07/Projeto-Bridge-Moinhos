@@ -36,21 +36,26 @@ Cabeçalho: x-codigo  (ou ?c= para <img>)                      gate de acesso
     "spend": 1645.24, "leads": 67, "cpl": 24.56,
     "impr": 50548, "cliques": 976, "ctr": 1.93, "cpm": 32.55,
     "ant": { "spend": 404.55, "leads": 10, "cpl": 40.46 },   // ou null
-    "faixas": { "ok": 4, "warn": 0, "bad": 0, "mute": 0 }
+    "faixas": { "ok": 3, "warn": 0, "bad": 0, "mute": 0, "espera": 3 }
   },
 
   "corretores": [ {
     "id": "fittipaldi",                // slug estável, casa com a foto
     "nome": "Fittipaldi",
-    "foto": "fittipaldi.jpg",          // arquivo em /assets/corretores/
+    "fotos": ["fittipaldi.jpg"],       // arquivos em /assets/corretores/; a dupla
+                                       // que atende junta traz dois e divide um cartão
     "praca": "Bela Vista",             // chip curto
     "pracas": "Bela Vista · Country Club · Sync",   // title do chip
     "spend": 315.95, "leads": 19, "cpl": 16.63,     // cpl null quando leads = 0
     "impr": 8204, "reach": 4160, "freq": 1.97, "ctr": 3.07, "cpm": 38.51,
     "cliques": 252,                    // round(impr * ctr / 100) — cliques todos
     "taxaConversa": 7.5,               // leads / cliques * 100; 0 quando cliques = 0
-    "status": "ok" | "warn" | "bad" | "mute",       // mute = sem lead no período
-    "estreia": false,                  // true = sem entrega no período anterior
+    "status": "ok" | "warn" | "bad" | "mute" | "espera",
+    //   mute   = a campanha entregou, gastou e ninguém abriu conversa (alarme)
+    //   espera = não há campanha entregando no período; corretor novo cujo
+    //            anúncio ainda não subiu no Gerenciador (neutro, não é alarme)
+    "estreia": false,                  // entregou agora e não existia no período anterior
+                                       // (nunca true para quem está em "espera")
     "ant": { "spend": 329.14, "leads": 8, "cpl": 41.14 }    // ou null
   } ],
 
@@ -76,12 +81,19 @@ O vínculo campanha ↔ corretor é um MAPA EXPLÍCITO, nunca heurística de sub
 (um "Rafael Souza" futuro quebraria a heurística; o mapa não). Casar contra o nome
 da campanha normalizado (minúsculas, sem acento):
 
-| id | nome | casa com | foto |
+| id | nome | casa com (qualquer uma) | fotos |
 |---|---|---|---|
 | `fittipaldi` | Fittipaldi | `[fittipaldi]` | fittipaldi.jpg |
 | `birk` | Rafael Birk | `[rafael birk]` | birk.jpg |
 | `adriano` | Adriano | `[adriano]` | adriano.jpg |
-| `sandra` | Sandra | `[sandra]` | sandra.jpg |
+| `flavia-ismael` | Flavia e Ismael | `[flavia/ismael]`, `[flavia e ismael]` | flavia.jpg + ismael.jpg |
+| `roseli` | Roseli | `[roselil]`, `[roseli]` | roseli.jpg |
+| `jaqueline` | Jaqueline | `[jaqueline]`, `[jaquelinne]` | jaqueline.jpg |
+
+`casa` é LISTA de grafias, não texto: o nome no Gerenciador diverge do nome real
+(`[Roselil]` lá, "Roseli" aqui) e pode ser renomeado. Qualquer grafia prevista casa;
+nenhuma some em silêncio. Saiu do roster em set/2026: **Sandra** (campanha pausada
+em 17/09).
 
 Campanha da conta que não casa com o roster: fora dos cartões e dos agregados
 (`rede`, `criativos`) — mas DENTRO de `meses`. Corretor do roster sem entrega no

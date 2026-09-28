@@ -57,6 +57,22 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
 - Corretores definidos: ...
 -->
 
+### [2026-09-28] Rotação de corretores no painel
+
+- **Saiu:** Sandra (campanha pausada no Gerenciador em 17/09).
+- **Entraram:** Flavia e Ismael (casal, atendem juntos — uma campanha só,
+  `[Flavia/Ismael]`, um cartão com os dois rostos), Roseli (campanha `[Roselil]`
+  no Gerenciador) e Jaqueline (ainda sem campanha criada).
+- **Mantidos:** Adriano, Fittipaldi, Rafael Birk.
+- **Consequências no código:** `casa` do roster virou lista de grafias (o nome no
+  Gerenciador diverge do nome real e pode ser renomeado); `foto` virou `fotos`
+  (lista, para a dupla); e nasceu o status **`espera`**, que separa "gastou e não
+  trouxe lead" (alarme) de "ainda não tem campanha no ar" (neutro) — sem ele o
+  painel acusaria de caro quem nunca gastou um real.
+- **Desempenho na virada (14 dias até 27/09):** operação a R$ 18,76 por lead,
+  contra R$ 24,56 em agosto. Flavia e Ismael estrearam a R$ 9,28; Roseli a
+  R$ 73,79, mas com apenas 2 leads — dado ainda ralo.
+
 ### [2026-08-31] Painel de corretores — publicado na Vercel
 
 - **O que mudou:** o painel está no ar, em projeto Vercel conectado a este repositório
