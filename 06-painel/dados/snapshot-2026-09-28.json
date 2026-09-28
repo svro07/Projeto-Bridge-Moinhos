@@ -1,0 +1,63 @@
+{
+  "comentario": "Snapshot real da conta CA - Bridge Moinhos 01 (1718135052525631), puxado da Graph API em 28/09/2026. Alimenta o modo demo (lib/mock.js). Janela: 14/09-27/09/2026; anterior: 31/08-13/09/2026. leads = onsite_conversion.messaging_conversation_started_7d. Jaqueline está no roster mas não aparece aqui: a campanha dela ainda não subiu no Gerenciador, então o painel a mostra em 'aguardando campanha'. Sandra saiu do roster (campanha pausada em 17/09) e por isso também não consta.",
+  "geradoEm": "2026-09-28",
+  "periodo": { "desde": "2026-09-14", "ate": "2026-09-27" },
+  "anterior": { "desde": "2026-08-31", "ate": "2026-09-13" },
+  "corretores": {
+    "adriano": { "campanhaId": "120248092035700135", "campanha": "[ENGAJAMENTO] [Adriano] Whats",
+      "spend": 428.32, "leads": 27, "impressions": 16099, "reach": 8456, "frequency": 1.904, "ctr": 1.66, "cpm": 26.61,
+      "anterior": { "spend": 411.74, "leads": 16 } },
+    "fittipaldi": { "campanhaId": "120247681064840135", "campanha": "[ENGAJAMENTO] [Fittipaldi] Whats",
+      "spend": 441.30, "leads": 19, "impressions": 10380, "reach": 2980, "frequency": 3.483, "ctr": 1.46, "cpm": 42.51,
+      "anterior": { "spend": 395.22, "leads": 23 } },
+    "birk": { "campanhaId": "120248169086640135", "campanha": "[ENGAJAMENTO] [Rafael Birk] Whats",
+      "spend": 157.19, "leads": 6, "impressions": 4613, "reach": 3018, "frequency": 1.528, "ctr": 0.67, "cpm": 34.08,
+      "anterior": { "spend": 493.19, "leads": 18 } },
+    "flavia-ismael": { "campanhaId": "120248840658830135", "campanha": "[ENGAJAMENTO] [Flavia/Ismael] Whats",
+      "spend": 157.81, "leads": 17, "impressions": 2662, "reach": 1390, "frequency": 1.915, "ctr": 4.85, "cpm": 59.28,
+      "anterior": null },
+    "roseli": { "campanhaId": "120248840932730135", "campanha": "[ENGAJAMENTO] [Roselil] Whats",
+      "spend": 147.58, "leads": 2, "impressions": 5400, "reach": 2745, "frequency": 1.967, "ctr": 1.06, "cpm": 27.33,
+      "anterior": null }
+  },
+  "meses": [
+    { "rot": "mai", "spend": 1713.66, "leads": 20 },
+    { "rot": "jun", "spend": 3959.99, "leads": 134 },
+    { "rot": "jul", "spend": 4308.91, "leads": 95 },
+    { "rot": "ago", "spend": 4222.13, "leads": 164 },
+    { "rot": "set", "spend": 3054.21, "leads": 145, "parcial": true }
+  ],
+  "criativos": {
+    "adriano": [
+      { "adId": "120248822354610135", "nome": "VID - Moinhos - 590k - Clássico", "spend": 172.21, "impressions": 4151, "ctr": 2.75, "leads": 17 },
+      { "adId": "120248397538690135", "nome": "IMG - Mont Serrat", "spend": 121.57, "impressions": 3046, "ctr": 2.10, "leads": 8 },
+      { "adId": "120248612845010135", "nome": "IMG - Tres figueiras", "spend": 85.39, "impressions": 5454, "ctr": 1.28, "leads": 2 },
+      { "adId": "120248806282400135", "nome": "IMG - Tres figueiras", "spend": 25.82, "impressions": 2399, "ctr": 0.38, "leads": 0 },
+      { "adId": "120248839080680135", "nome": "AD - Moinhos - Andar Inteiro - Estático", "spend": 7.85, "impressions": 236, "ctr": 2.97, "leads": 0 },
+      { "adId": "120248806282420135", "nome": "IMG - Mont Serrat", "spend": 5.48, "impressions": 520, "ctr": 0.19, "leads": 0 }
+    ],
+    "fittipaldi": [
+      { "adId": "120248872770060135", "nome": "VID - 📍 Avenida Pirapó - R$ 2.250.000", "spend": 39.28, "impressions": 699, "ctr": 0.72, "leads": 5 },
+      { "adId": "120248517880990135", "nome": "VID - Jardim Europa 2.580.000", "spend": 118.47, "impressions": 1541, "ctr": 2.66, "leads": 4 },
+      { "adId": "120248806517420135", "nome": "VID - Jardim Europa 2.580.000", "spend": 65.23, "impressions": 795, "ctr": 2.52, "leads": 3 },
+      { "adId": "120248840538780135", "nome": "VID - Petrópolis -231,51 m2 - R$ 3.230.000,00", "spend": 44.63, "impressions": 771, "ctr": 1.04, "leads": 2 },
+      { "adId": "120248561187370135", "nome": "IMG - Bela Vista 2.190.000,00", "spend": 75.09, "impressions": 4800, "ctr": 1.15, "leads": 1 },
+      { "adId": "120248806517410135", "nome": "IMG - Bela Vista 2.190.000,00", "spend": 27.81, "impressions": 538, "ctr": 0.93, "leads": 1 }
+    ],
+    "birk": [
+      { "adId": "120248276093940135", "nome": "VID - Ben 4", "spend": 46.29, "impressions": 2201, "ctr": 0.68, "leads": 2 },
+      { "adId": "120248714831130135", "nome": "VID - Miro 2", "spend": 48.48, "impressions": 889, "ctr": 0.79, "leads": 2 },
+      { "adId": "120248276095920135", "nome": "VID - Ben 3", "spend": 24.20, "impressions": 857, "ctr": 0.82, "leads": 1 },
+      { "adId": "120248714843050135", "nome": "VID - Miro 2", "spend": 26.35, "impressions": 445, "ctr": 0.22, "leads": 1 },
+      { "adId": "120248714827470135", "nome": "VID - Miro 1", "spend": 4.10, "impressions": 58, "ctr": 1.72, "leads": 0 },
+      { "adId": "120248714843060135", "nome": "VID - Miro 1", "spend": 4.05, "impressions": 112, "ctr": 0.00, "leads": 0 }
+    ],
+    "flavia-ismael": [
+      { "adId": "120248872448090135", "nome": "VID - Moinhos de Vento - R$ 695.000,00", "spend": 85.74, "impressions": 1446, "ctr": 7.12, "leads": 12 },
+      { "adId": "120248840658840135", "nome": "VID - Jardim Europa | 151m² | 3 suítes | 2 vagas | R$ 2.580.000", "spend": 72.07, "impressions": 1216, "ctr": 2.14, "leads": 5 }
+    ],
+    "roseli": [
+      { "adId": "120248840932720135", "nome": "VID - 📍Montserrat | 2 Dorm | 1 vaga | 💰 RS 1.290.000", "spend": 147.58, "impressions": 5400, "ctr": 1.06, "leads": 2 }
+    ]
+  }
+}

@@ -7,7 +7,8 @@ o material de projeto do painel:
 
 - `contrato-payload.md` — o contrato do `/api/corretores` (fonte de verdade entre
   backend e frontend).
-- `dados/snapshot-2026-08-26.json` — os números reais que alimentam o modo demo.
+- `dados/snapshot-2026-09-28.json` — os números reais que alimentam o modo demo (o de
+  26/08 fica como histórico).
 - `mockup/` — o protótipo aprovado que deu origem ao frontend (arquivo único,
   abre offline; `build.py` regera a partir do template).
 - `assets/` — fontes Satoshi, logos Case e os retratos tratados dos corretores
