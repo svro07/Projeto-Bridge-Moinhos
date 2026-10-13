@@ -73,8 +73,14 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
   o que o status `espera` foi feito para fazer. Ganhou a praça Moinhos de Vento.
 - **`fotos: []`:** novo caso previsto — corretor no ar antes de a foto chegar. O
   cartão desenha a silhueta neutra em vez de pedir um arquivo inexistente (antes o
-  `onerror` resolvia, mas gerava um 404 por carregamento). Karoline está assim até
-  a foto dela chegar.
+  `onerror` resolvia, mas gerava um 404 por carregamento). Karoline entrou assim e
+  ganhou o retrato no mesmo dia; o caminho fica pronto para a próxima entrada.
+- **Retrato da Karoline:** a origem é um plano médio com rua ao fundo, então o
+  enquadramento foi pelo rosto e conferido no recorte circular, que é como o painel
+  mostra. Além do padrão de sempre (256px, preto e branco, autocontraste, nitidez),
+  levou um ombro nas altas luzes: o fundo externo estourava em 255, contra um teto de
+  246 no resto do time, e puxava o olho para fora do rosto. Sombra e meio-tom ficam
+  intactos — a média dela (95) cai na média do grupo (94,5).
 - **Concordância na leitura automática:** a frase de estreia dizia "Os dois já
   entraram dentro da régua verde". Com Karoline e Jaqueline estreando juntas, saiu
   errado — o painel não sabe o gênero de ninguém. A frase perdeu o pronome: "E já

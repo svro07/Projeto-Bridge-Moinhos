@@ -89,7 +89,7 @@ da campanha normalizado (minúsculas, sem acento):
 | `flavia-ismael` | Flavia e Ismael | `[flavia/ismael]`, `[flavia e ismael]` | flavia.jpg + ismael.jpg |
 | `roseli` | Roseli | `[roselil]`, `[roseli]` | roseli.jpg |
 | `jaqueline` | Jaqueline | `[jaqueline]`, `[jaquelinne]` | jaqueline.jpg |
-| `karoline` | Karoline Aguiar | `[karoline aguiar]` | _(sem retrato ainda)_ |
+| `karoline` | Karoline Aguiar | `[karoline aguiar]` | karoline.jpg |
 
 `casa` é LISTA de grafias, não texto: o nome no Gerenciador diverge do nome real
 (`[Roselil]` lá, "Roseli" aqui) e pode ser renomeado. Qualquer grafia prevista casa;
