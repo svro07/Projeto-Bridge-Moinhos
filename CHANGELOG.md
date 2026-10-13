@@ -57,6 +57,38 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
 - Corretores definidos: ...
 -->
 
+### [2026-10-13] Karoline Aguiar volta ao roster; Jaqueline entra no ar
+
+- **Entrou:** Karoline Aguiar, campanha `[ENGAJAMENTO] [Karoline Aguiar] Whats`
+  (criada em 05/10), praça Higienópolis. Ela já teve uma passagem no projeto
+  (jun–ago/2026).
+- **A armadilha que isso criou:** a campanha da passagem antiga
+  (`[ENGAJAMENTO] [Karoline] Whats`) continua pausada na conta. O casamento
+  campanha↔corretor é por `includes`, então a chave `[karoline]` pegaria as duas e
+  somaria o período antigo ao cartão atual sempre que alguém escolhesse um intervalo
+  que alcançasse jun–ago (o painel aceita intervalo livre). A chave é
+  `[karoline aguiar]`, que casa só com a campanha de agora. Coberto por teste.
+- **Jaqueline saiu de "aguardando campanha" sozinha:** a campanha dela subiu em
+  30/09 e o cartão passou a medir sem nenhuma alteração de código — era exatamente
+  o que o status `espera` foi feito para fazer. Ganhou a praça Moinhos de Vento.
+- **`fotos: []`:** novo caso previsto — corretor no ar antes de a foto chegar. O
+  cartão desenha a silhueta neutra em vez de pedir um arquivo inexistente (antes o
+  `onerror` resolvia, mas gerava um 404 por carregamento). Karoline está assim até
+  a foto dela chegar.
+- **Concordância na leitura automática:** a frase de estreia dizia "Os dois já
+  entraram dentro da régua verde". Com Karoline e Jaqueline estreando juntas, saiu
+  errado — o painel não sabe o gênero de ninguém. A frase perdeu o pronome: "E já
+  entraram dentro da régua verde", que serve ao singular e ao plural.
+- **Desempenho na janela 29/09–12/10:** operação a R$ 24,14 por lead (eram R$ 17,60
+  na quinzena anterior) com 128 leads e R$ 3.090 investidos — custo maior puxado
+  pela entrada de duas campanhas novas e pelo dobro de verba. Karoline estreou a
+  R$ 16,79 e Jaqueline a R$ 19,78. Fittipaldi passou para a faixa amarela
+  (R$ 42,94, +131%), com CTR em 0,94% e frequência 2,82 — a fadiga sinalizada em
+  28/09 se confirmou.
+- **Documentação que estava desatualizada:** `06-painel/README.md` ainda descrevia o
+  roster como "os quatro atuais — Fittipaldi, Rafael Birk, Adriano e Sandra" e
+  listava Karoline entre quem saiu. Corrigido junto.
+
 ### [2026-09-28] Cartões de corretor — tipografia ampliada
 
 - **Motivo:** o gestor que acompanha os corretores lê o painel junto com o Carlos;

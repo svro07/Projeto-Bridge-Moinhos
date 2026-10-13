@@ -89,11 +89,22 @@ da campanha normalizado (minúsculas, sem acento):
 | `flavia-ismael` | Flavia e Ismael | `[flavia/ismael]`, `[flavia e ismael]` | flavia.jpg + ismael.jpg |
 | `roseli` | Roseli | `[roselil]`, `[roseli]` | roseli.jpg |
 | `jaqueline` | Jaqueline | `[jaqueline]`, `[jaquelinne]` | jaqueline.jpg |
+| `karoline` | Karoline Aguiar | `[karoline aguiar]` | _(sem retrato ainda)_ |
 
 `casa` é LISTA de grafias, não texto: o nome no Gerenciador diverge do nome real
 (`[Roselil]` lá, "Roseli" aqui) e pode ser renomeado. Qualquer grafia prevista casa;
 nenhuma some em silêncio. Saiu do roster em set/2026: **Sandra** (campanha pausada
 em 17/09).
+
+**Karoline Aguiar casa por `[karoline aguiar]`, nunca por `[karoline]`.** Ela já teve
+uma passagem pelo projeto (jun–ago/2026) e a campanha daquela época
+(`[ENGAJAMENTO] [Karoline] Whats`, pausada) continua na conta. Como o casamento é por
+`includes`, a chave curta pegaria as duas campanhas e somaria a passagem antiga ao
+cartão de agora em qualquer intervalo que alcançasse jun–ago. A campanha antiga segue
+contando só em `meses`, como as demais de quem saiu.
+
+`fotos` pode vir vazio (`[]`): corretor no ar antes de a foto chegar. O cartão desenha
+a silhueta neutra em vez de pedir um arquivo que não existe.
 
 Campanha da conta que não casa com o roster: fora dos cartões e dos agregados
 (`rede`, `criativos`) — mas DENTRO de `meses`. Corretor do roster sem entrega no

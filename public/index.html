@@ -644,8 +644,8 @@ function monta() {
           aria-pressed="${corretorSel==='todos'}">Todos</button>
         ${D.corretores.map(c => `<button type="button" class="pill" data-id="${esc(c.id)}"
             aria-pressed="${c.id===corretorSel}">
-            <img src="/assets/corretores/${esc((c.fotos || [])[0] || '')}" alt=""
-              onerror="this.onerror=null;this.src=window.__semFoto">${esc(c.nome)}</button>`).join('')}
+            <img src="${(c.fotos || [])[0] ? '/assets/corretores/' + esc(c.fotos[0]) : window.__semFoto}"
+              alt="" onerror="this.onerror=null;this.src=window.__semFoto">${esc(c.nome)}</button>`).join('')}
       </div>
       <div class="crs" id="crs"></div>
     </section>` : ''}
@@ -812,8 +812,8 @@ function pintaGrade() {
     return `<article class="u ${esc(c.status)}">
       <div class="u-top">
         <div class="u-quem">
-          <span class="retratos">${(c.fotos || []).map((f, k) =>
-            `<img class="retrato" src="/assets/corretores/${esc(f)}"
+          <span class="retratos">${((c.fotos || []).length ? c.fotos : [null]).map((f, k) =>
+            `<img class="retrato" src="${f ? '/assets/corretores/' + esc(f) : window.__semFoto}"
                alt="${k === 0 ? esc(c.nome) : ''}"
                onerror="this.onerror=null;this.src=window.__semFoto">`).join('')}</span>
           <div style="min-width:0">

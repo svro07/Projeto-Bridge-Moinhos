@@ -1,5 +1,8 @@
 {
   "name": "painel-bridge-moinhos",
   "private": true,
-  "scripts": { "dev": "node dev.js" }
+  "scripts": {
+    "dev": "node dev.js",
+    "test": "node --test"
+  }
 }

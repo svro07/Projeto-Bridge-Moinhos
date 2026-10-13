@@ -33,10 +33,16 @@ quase direta.
 de R$ 60. O teto visual da barra é R$ 100, escolhido para caber o pior mês real da
 conta (maio/2026, R$ 85,68) sem cortar a barra.
 
-**Roster travado nos quatro atuais** — Fittipaldi, Rafael Birk, Adriano e Sandra. As
-campanhas pausadas (Karoline, Camille, Ricardo Osorio, Daniela Alban) são de corretores
-que saíram do projeto e ficam fora dos cartões. Como o projeto prevê rotação, o roster
-mora em `D.corretores` e é a única coisa que muda quando alguém entra ou sai.
+**Roster travado nos sete atuais** — Fittipaldi, Rafael Birk, Adriano, Flavia e Ismael
+(dupla, um cartão só), Roseli, Jaqueline e Karoline Aguiar. As campanhas pausadas
+(Camille, Ricardo Osorio, Daniela Alban, Sandra) são de corretores que saíram do projeto
+e ficam fora dos cartões. Como o projeto prevê rotação, o roster mora no `ROSTER` de
+`lib/corretores.js` e é a única coisa que muda quando alguém entra ou sai.
+
+**Karoline Aguiar voltou em out/2026**, depois de uma passagem que terminou em ago/2026.
+A campanha da passagem antiga continua pausada na conta, então ela casa por
+`[karoline aguiar]` e nunca por `[karoline]` — a chave curta somaria os dois períodos no
+mesmo cartão. O contrato explica em detalhe.
 
 **Exceção deliberada ao roster:** o gráfico "A operação mês a mês" usa a conta inteira,
 incluindo as campanhas encerradas. Filtrar ali apagaria a curva de aprendizado — os
@@ -44,7 +50,8 @@ corretores que saíram concentram R$ 10.244 dos R$ 12.492 já investidos, e maio
 ficariam vazios. O gráfico diz isso na própria legenda.
 
 **Retratos:** 256×256, quadrados, preto e branco, com ponto de preto e branco
-normalizado para os quatro casarem em tom. 256px é o teto que a menor foto de origem
+normalizado para todos casarem em tom. Quem ainda não mandou foto entra com `fotos: []`
+e o cartão desenha a silhueta neutra. 256px é o teto que a menor foto de origem
 (Fittipaldi, 227px) sustenta sem borrar — o avatar é exibido a 56px, com folga de
 sobra em tela retina.
 
