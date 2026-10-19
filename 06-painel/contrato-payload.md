@@ -50,7 +50,7 @@ Cabeçalho: x-codigo  (ou ?c= para <img>)                      gate de acesso
     "impr": 8204, "reach": 4160, "freq": 1.97, "ctr": 3.07, "cpm": 38.51,
     "cliques": 252,                    // round(impr * ctr / 100) — cliques todos
     "taxaConversa": 7.5,               // leads / cliques * 100; 0 quando cliques = 0
-    "status": "ok" | "warn" | "bad" | "mute" | "espera",
+    "status": "ok" | "warn" | "bad" | "mute" | "cedo" | "espera",
     //   mute   = a campanha entregou, gastou e ninguém abriu conversa (alarme)
     //   espera = não há campanha entregando no período; corretor novo cujo
     //            anúncio ainda não subiu no Gerenciador (neutro, não é alarme)
@@ -86,15 +86,16 @@ da campanha normalizado (minúsculas, sem acento):
 | `fittipaldi` | Fittipaldi | `[fittipaldi]` | fittipaldi.jpg |
 | `birk` | Rafael Birk | `[rafael birk]` | birk.jpg |
 | `adriano` | Adriano | `[adriano]` | adriano.jpg |
-| `flavia-ismael` | Flavia e Ismael | `[flavia/ismael]`, `[flavia e ismael]` | flavia.jpg + ismael.jpg |
-| `roseli` | Roseli | `[roselil]`, `[roseli]` | roseli.jpg |
-| `jaqueline` | Jaqueline | `[jaqueline]`, `[jaquelinne]` | jaqueline.jpg |
 | `karoline` | Karoline Aguiar | `[karoline aguiar]` | karoline.jpg |
+| `eduardo` | Eduardo Serrano | `[eduardo serrano]`, `[eduardo]` | eduardo.jpg |
+| `bianca` | Bianca | `[bianca]` | bianca.jpg |
+| `ursula` | Úrsula | `[ursula]` | ursula.jpg |
+| `suzy` | Suzy | `[suzy]`, `[suzi]`, `[susy]` | _(sem retrato ainda)_ |
 
 `casa` é LISTA de grafias, não texto: o nome no Gerenciador diverge do nome real
 (`[Roselil]` lá, "Roseli" aqui) e pode ser renomeado. Qualquer grafia prevista casa;
-nenhuma some em silêncio. Saiu do roster em set/2026: **Sandra** (campanha pausada
-em 17/09).
+nenhuma some em silêncio. Saíram do roster: **Sandra** (set/2026) e **Flavia e Ismael,
+Roseli e Jaqueline** (out/2026, campanhas pausadas entre 16 e 18/10).
 
 **Karoline Aguiar casa por `[karoline aguiar]`, nunca por `[karoline]`.** Ela já teve
 uma passagem pelo projeto (jun–ago/2026) e a campanha daquela época
@@ -114,7 +115,21 @@ não fingir que ele não existe).
 ## Régua e status
 
 `verde`/`amarelo` de `REGUA_VERDE`/`REGUA_AMARELO` (padrão 40/60), teto visual 100.
-`status`: cpl < verde → ok; < amarelo → warn; ≥ amarelo → bad; leads = 0 → mute.
+`status`, na ordem em que é decidido:
+
+| status | condição | o que o cartão diz |
+|---|---|---|
+| `espera` | sem entrega e sem histórico | "ainda sem campanha" — entrou no projeto, campanha não subiu |
+| `cedo` | leads = 0 e spend < régua verde | "começando" — gastou menos que um lead saudável; zero lead ainda é o esperado |
+| `mute` | leads = 0 (gastou acima da régua verde) | "sem lead" — gastou de verdade e ninguém abriu conversa |
+| `ok` / `warn` / `bad` | cpl < verde / < amarelo / ≥ amarelo | o CPL, na cor da régua |
+
+`espera`, `cedo` e `mute` parecem iguais no dado (zero lead) e são três coisas
+diferentes na leitura: não começou, mal começou, e começou e não funcionou. Sem
+essa separação o painel acusa de caro quem subiu ontem — que foi o que aconteceu
+com o Eduardo Serrano, no ar havia um dia com R$ 6,30 gastos. `cedo` conta como
+"no ar" no placar; `espera` não. O limite de `cedo` sai da própria régua verde:
+abaixo do custo de um lead saudável, zero lead é o resultado esperado, não um sinal.
 
 ## Leitura automática — sinais com threshold nomeado (método Case)
 

@@ -33,11 +33,13 @@ quase direta.
 de R$ 60. O teto visual da barra é R$ 100, escolhido para caber o pior mês real da
 conta (maio/2026, R$ 85,68) sem cortar a barra.
 
-**Roster travado nos sete atuais** — Fittipaldi, Rafael Birk, Adriano, Flavia e Ismael
-(dupla, um cartão só), Roseli, Jaqueline e Karoline Aguiar. As campanhas pausadas
-(Camille, Ricardo Osorio, Daniela Alban, Sandra) são de corretores que saíram do projeto
-e ficam fora dos cartões. Como o projeto prevê rotação, o roster mora no `ROSTER` de
-`lib/corretores.js` e é a única coisa que muda quando alguém entra ou sai.
+**Roster travado nos oito atuais** — Fittipaldi, Rafael Birk, Adriano, Karoline Aguiar,
+Eduardo Serrano, Bianca, Úrsula e Suzy. As campanhas pausadas (Camille, Ricardo Osorio,
+Daniela Alban, Sandra, Flavia e Ismael, Roseli, Jaqueline) são de corretores que saíram
+do projeto e ficam fora dos cartões. Como o projeto prevê rotação, o roster mora no
+`ROSTER` de `lib/corretores.js` e é a única coisa que muda quando alguém entra ou sai.
+`npm test` confere o casamento campanha↔corretor, inclusive contra a lista de campanhas
+de quem já saiu — é lá que uma chave curta demais é pega.
 
 **Karoline Aguiar voltou em out/2026**, depois de uma passagem que terminou em ago/2026.
 A campanha da passagem antiga continua pausada na conta, então ela casa por

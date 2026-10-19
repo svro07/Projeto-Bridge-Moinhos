@@ -57,6 +57,38 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
 - Corretores definidos: ...
 -->
 
+### [2026-10-19] Rotação de out/2026: saem quatro, entram quatro
+
+- **Saíram:** Flavia e Ismael (um cartão), Roseli e Jaqueline. As campanhas foram
+  pausadas no Gerenciador entre 16 e 18/10. Os retratos saíram dos assets, como
+  foi com a Sandra.
+- **Entraram:** Eduardo Serrano (campanha `[Eduardo Serrano]` criada em 18/10,
+  praça Moinhos de Vento pelos anúncios), Bianca, Úrsula e Suzy — estas três sem
+  campanha no Gerenciador, em "aguardando campanha". Suzy ainda sem retrato, com a
+  silhueta neutra.
+- **Mantidos:** Fittipaldi, Rafael Birk, Adriano e Karoline Aguiar — campanhas
+  ativas e com entrega; ninguém pediu a saída deles.
+- **Novo status `cedo`.** O Eduardo subiu em 18/10 e, na janela seguinte, tinha
+  R$ 6,30 gastos e nenhum lead: o painel o pintava de vermelho com "sem lead",
+  acusando de ruim quem estava no ar havia um dia. `cedo` separa "mal começou" de
+  "começou e não funcionou"; o limite é a própria régua verde, porque abaixo do
+  custo de um lead saudável zero lead é o resultado esperado. É a mesma classe do
+  `espera` criado para a Jaqueline em set/2026 — o dado é igual (zero lead) e a
+  leitura é oposta.
+- **Duas correções na leitura automática que a rotação expôs:** a frase de estreia
+  classificava o Eduardo como "fora da régua verde", contradizendo a linha seguinte
+  que dizia ser cedo para julgar (quem está em `cedo` saiu do cálculo de estreias);
+  e "aguardando campanha" virou uma frase só com todos os nomes, em vez de uma
+  linha por pessoa — com três entrando juntas, viravam três linhas idênticas.
+- **Retratos dos novos:** Bianca, Eduardo e Úrsula no padrão de sempre. A da Úrsula
+  vinha com máscara circular e cantos brancos, então o corte ficou dentro do círculo
+  dela para o branco não invadir o do painel. O Eduardo tinha média 153 contra 99 do
+  grupo (parede clara ao fundo) e levou gama 1,40, que o trouxe para 133 — na faixa
+  de Roseli e Jaqueline.
+- **Testes:** o arquivo passou a rodar toda chave do roster contra a lista de
+  campanhas de quem já saiu da conta, que é a trava para a classe de erro do
+  `[karoline]`. Também confere que toda foto declarada existe nas duas pastas.
+
 ### [2026-10-13] Karoline Aguiar volta ao roster; Jaqueline entra no ar
 
 - **Entrou:** Karoline Aguiar, campanha `[ENGAJAMENTO] [Karoline Aguiar] Whats`

@@ -176,6 +176,7 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .u.ok{border-left:3px solid var(--pos)}
 .u.mute{border-left:3px solid var(--neg)}
 .u.espera{border-left:3px solid var(--ink-3)}
+.u.cedo{border-left:3px solid var(--blue-2)}
 .u.espera .retrato{filter:grayscale(1);opacity:.62}
 .u-top{display:flex;align-items:flex-start;gap:12px;justify-content:space-between}
 .u-quem{display:flex;gap:12px;align-items:center;min-width:0}
@@ -205,6 +206,7 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .chip.warn{color:var(--atn);background:rgba(234,179,8,.14);border-color:rgba(138,109,0,.30)}
 .chip.bad{color:var(--neg);background:rgba(239,0,0,.07);border-color:rgba(239,0,0,.28)}
 .chip.espera{color:var(--ink-3);background:var(--off);border-color:var(--linha-forte)}
+.chip.cedo{color:var(--blue-2);background:rgba(70,96,170,.08);border-color:rgba(70,96,170,.22)}
 .pos{font-size:12.5px;font-weight:700;color:var(--ink-3);background:var(--off);
   border:1px solid var(--linha);border-radius:7px;width:27px;height:27px;flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
@@ -215,6 +217,7 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .u.bad .u-cpr .n{color:var(--neg)}
 .u.mute .u-cpr .n{color:var(--neg);font-size:clamp(28px,4.4vw,34px)}
 .u.espera .u-cpr .n{color:var(--ink-3);font-size:clamp(22px,3.4vw,26px)}
+.u.cedo .u-cpr .n{color:var(--blue-2);font-size:clamp(22px,3.4vw,26px)}
 .u-cpr .l{font-size:12px;color:var(--ink-3);width:100%;margin-top:3px}
 
 .regua{margin-top:12px}
@@ -460,7 +463,7 @@ const n0   = v => Number(v).toLocaleString('pt-BR');
 const pct1 = v => Number(v).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + '%';
 const esc  = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dt   = d => String(d || '').split('-').reverse().join('/');
-const ROT  = { ok:'saudável', warn:'atenção', bad:'caro', mute:'sem lead', espera:'aguardando campanha' };
+const ROT  = { ok:'saudável', warn:'atenção', bad:'caro', mute:'sem lead', cedo:'começando', espera:'aguardando campanha' };
 // a primeira frase da seção precisa acompanhar o botão de ordem, senão promete
 // "do mais barato para o mais caro" enquanto a lista está ordenada por outra coisa
 const ORDEM_TXT = {
@@ -469,7 +472,7 @@ const ORDEM_TXT = {
   spend: 'De quem mais investiu para quem menos investiu.',
   delta: 'De quem mais encareceu para quem menos encareceu.'
 };
-const ROTP = { ok:'saudáveis', warn:'em atenção', bad:'caros', mute:'sem lead', espera:'aguardando campanha' };
+const ROTP = { ok:'saudáveis', warn:'em atenção', bad:'caros', mute:'sem lead', cedo:'começando', espera:'aguardando campanha' };
 
 // Variação em % a partir dos valores brutos. `menorEhMelhor` inverte a cor:
 // custo que cai é notícia boa. Sem base de comparação, não pinta nada.
@@ -796,10 +799,14 @@ function ordenadas() {
 function pintaGrade() {
   document.getElementById('grade').innerHTML = ordenadas().map((c, i) => {
     const espera = c.status === 'espera';   // ainda não tem campanha no ar
-    const mute = !espera && c.cpl == null;   // gastou e ninguém abriu conversa
+    const cedo = c.status === 'cedo';        // subiu agora: gastou pouco demais para medir
+    const mute = c.status === 'mute';        // gastou de verdade e ninguém abriu conversa
     const frase = espera
       ? `A campanha ainda não subiu no gerenciador. Assim que entrar no ar, os números
          aparecem aqui sozinhos.`
+      : cedo
+        ? `A campanha subiu agora. Com ${brl0(c.spend)} investidos, ainda é cedo para
+           dizer qual vai ser o custo por lead.`
       : c.leads
         ? `De cada 100 cliques no anúncio, <b>${Math.round(c.taxaConversa)}</b> viraram
            conversa no WhatsApp.`
@@ -821,19 +828,21 @@ function pintaGrade() {
             <div class="u-chips">
               ${mute ? '' : `<span class="chip ${esc(c.status)}">${ROT[c.status] || ''}</span>`}
               ${c.praca ? `<span class="chip" title="${esc(c.pracas)}">${esc(c.praca)}</span>` : ''}
-              ${c.estreia ? '<span class="chip novo">estreou</span>' : ''}
+              ${c.estreia && !cedo ? '<span class="chip novo">estreou</span>' : ''}
             </div>
           </div>
         </div>
         <span class="pos">${i+1}</span>
       </div>
       <div class="u-cpr">
-        <span class="n">${espera ? 'ainda sem campanha' : mute ? 'sem lead' : brl(c.cpl)}</span>
-        ${c.ant ? varHTML(c.cpl, c.ant.cpl, true) : ''}
+        <span class="n">${espera ? 'ainda sem campanha' : cedo ? 'começando'
+          : mute ? 'sem lead' : brl(c.cpl)}</span>
+        ${c.ant && !cedo ? varHTML(c.cpl, c.ant.cpl, true) : ''}
         <span class="l">${espera ? 'entra no painel assim que a campanha subir'
+          : cedo ? 'ainda sem lead — investimento pequeno demais para medir'
           : mute ? 'nenhuma conversa aberta no período' : 'por lead'}</span>
       </div>
-      ${espera ? '' : reguaHTML(c.cpl)}
+      ${espera || cedo ? '' : reguaHTML(c.cpl)}
       ${espera ? '' : `<div class="u-linha2">
         <div class="met"><span class="rot">Leads</span>
           <span class="val"><b>${n0(c.leads)}</b>${c.ant ? varHTML(c.leads, c.ant.leads, false) : ''}</span></div>
