@@ -210,9 +210,23 @@ section{display:flex;flex-direction:column;gap:15px;margin-top:38px}
 .chip.espera{color:var(--ink-3);background:var(--off);border-color:var(--linha-forte)}
 .chip.cedo{color:var(--blue-2);background:rgba(70,96,170,.08);border-color:rgba(70,96,170,.22)}
 .chip.parado{color:var(--ink-3);background:var(--off);border-color:var(--linha-forte)}
-/* tipo de lead: só aparece quando NÃO é a conversa de WhatsApp, que é o
-   padrão da conta — a frase do cartão já diz o tipo por extenso */
-.chip.tipo{color:var(--ink-2);background:var(--bege-fraco,rgba(234,116,57,.10));border-color:rgba(234,116,57,.30)}
+/* objetivo da campanha principal, em todo cartão: "campanha, objetivo,
+   resultado". Contorno em vez de fundo, para não competir com a tag da régua. */
+.chip.obj{background:transparent;color:var(--ink-2);border-color:var(--linha-forte)}
+.chip.obj.form{color:#9a4a1c;border-color:rgba(234,116,57,.55)}
+/* outra campanha do mesmo corretor com entrega na janela — uma linha à parte,
+   como no Gerenciador */
+.sec-head p.conferir{margin-top:6px;font-size:12.5px;color:var(--ink-2)}
+.u-outras{margin-top:10px;padding:9px 11px;border-radius:9px;background:var(--off);
+  border:1px solid var(--linha)}
+.u-outras-t{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-2);margin-bottom:4px}
+.u-outras ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.u-outras li{font-size:12.5px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:4px 8px;
+  align-items:baseline;font-variant-numeric:tabular-nums}
+.u-outras .o-tipo{font-weight:700;color:var(--ink)}
+.u-outras .o-st{font-size:11px;color:var(--ink-3)}
+.u-outras b{color:var(--ink)}
 .pos{font-size:12.5px;font-weight:700;color:var(--ink-3);background:var(--off);
   border:1px solid var(--linha);border-radius:7px;width:27px;height:27px;flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
@@ -633,7 +647,12 @@ function monta() {
       <div class="sec-head">
         <div><h2>Corretores</h2>
         <p>${ORDEM_TXT[ordem] || ORDEM_TXT.cpl} A marca na régua mostra onde cada um
-        caiu entre R$ 0 e ${brl0(D.regua.teto)} por lead.</p></div>
+        caiu entre R$ 0 e ${brl0(D.regua.teto)} por lead.</p>
+        <p class="conferir">Números de <b>${dt(D.periodo.desde)} a ${dt(D.periodo.ate)}</b>${
+          D.periodo.ate >= D.geradoEm ? ', incluindo hoje (o dia ainda está correndo)'
+                                      : ' — hoje não entra, o dia ainda está correndo'}.
+        Para conferir no Gerenciador, filtre as mesmas datas: cada cartão mostra a
+        campanha do corretor, e o custo dela é o "custo por resultado" de lá.</p></div>
         <div class="seg" id="seg-ordem" role="group" aria-label="Ordenar corretores">
           <button type="button" data-o="cpl"   aria-pressed="${ordem==='cpl'}">Custo</button>
           <button type="button" data-o="leads" aria-pressed="${ordem==='leads'}">Leads</button>
@@ -703,10 +722,11 @@ function monta() {
 
       <div class="cartao">
         <div class="cartao-topo"><div>
-          <div class="cartao-tit">De cada 100 cliques, quantos viraram conversa</div>
-          <div class="cartao-sub">Clique é quem tocou no anúncio; conversa é quem chegou no WhatsApp.
-          A distância entre os dois mostra o que o anúncio promete e a conversa não sustenta — ou o
-          contrário: quem atrai menos clique pode estar atraindo o clique certo.</div>
+          <div class="cartao-tit">De cada 100 cliques, quantos viraram lead</div>
+          <div class="cartao-sub">Clique é quem tocou no anúncio; lead é quem abriu conversa no
+          WhatsApp ou preencheu o formulário. Os dois tipos aparecem separados: formulário filtra
+          antes, então converte menos clique e não se compara com conversa. A linha tracejada é a
+          média do grupo, e só aparece com três corretores ou mais.</div>
         </div></div>
         <div class="plot" id="g-funil"></div>
       </div>
@@ -796,7 +816,7 @@ function ordenadas() {
   if (ordem === 'spend') return u.sort((a,b) => b.spend - a.spend);
   if (ordem === 'delta') {
     // "Piora" = quem mais encareceu contra o período anterior. Sem base, vai pro fim.
-    const dl = c => (c.ant && c.ant.cpl != null && c.cpl != null)
+    const dl = c => (c.ant && !c.mudouObjetivo && c.ant.cpl != null && c.cpl != null)
       ? (c.cpl - c.ant.cpl) / c.ant.cpl : -1e12;   // finita: dois sem base empatam sem NaN
     return u.sort((a,b) => dl(b) - dl(a));
   }
@@ -810,12 +830,15 @@ function pintaGrade() {
     const cedo = c.status === 'cedo';        // subiu agora: gastou pouco demais para medir
     const mute = c.status === 'mute';        // gastou de verdade e ninguém virou lead
     const semNumero = espera || parado;
-    // Como o lead chegou nesta janela. A conta roda dois tipos de campanha desde
-    // nov/2026 e "conversa no WhatsApp" deixou de valer para todo mundo.
-    const VIRARAM = { whats:'viraram conversa no WhatsApp',
-                      form:'preencheram o formulário',
-                      misto:'viraram lead (conversa no WhatsApp ou formulário)' };
-    const viraram = VIRARAM[c.tipoLead] || VIRARAM.whats;
+    // O cartão mostra UMA campanha — a principal do corretor — com o objetivo
+    // e o resultado dela, igual à linha do Gerenciador. A conta roda dois tipos
+    // de campanha desde nov/2026 e "conversa no WhatsApp" deixou de valer para
+    // todo mundo.
+    const form = c.objetivo === 'form';
+    const viraram = form ? 'preencheram o formulário' : 'viraram conversa no WhatsApp';
+    // a variação só aparece quando compara a mesma unidade, com volume dos dois
+    // lados — o servidor decide (`comparavel`), com a mesma régua da leitura
+    const compara = !!c.comparavel;
     const frase = espera
       ? `A campanha ainda não subiu no gerenciador. Assim que entrar no ar, os números
          aparecem aqui sozinhos.`
@@ -831,8 +854,23 @@ function pintaGrade() {
           ? `Teve ${n0(c.cliques)} clique${c.cliques === 1 ? '' : 's'} no período e nenhum virou lead.`
           : `Sem entrega registrada no período.`);
     // nota explica ausência de variação — estreia já tem chip próprio
-    const nota = (!c.estreia && c.ant && !c.ant.leads && c.leads)
-      ? 'sem lead no período anterior' : '';
+    const nota = c.mudouObjetivo
+      ? `campanha nova (${c.ant.objetivo === 'form' ? 'formulário' : 'WhatsApp'} → ` +
+        `${form ? 'formulário' : 'WhatsApp'}): sem comparação com o período anterior`
+      : (!c.estreia && c.ant && !c.ant.leads && c.leads) ? 'sem lead no período anterior'
+      : (c.ant && !c.comparavel && c.ant.leads > 0 && !cedo && !semNumero)
+        ? `período anterior com só ${c.ant.leads} lead${c.ant.leads === 1 ? '' : 's'} — pouco para comparar`
+      : '';
+    // Outras campanhas do mesmo corretor com entrega na janela — a antiga que foi
+    // pausada no meio da troca, tipicamente. Cada uma com os próprios números,
+    // como uma linha à parte no Gerenciador.
+    const outras = (c.outras || []).map(o =>
+      `<li><span class="o-tipo">${o.objetivo === 'form' ? 'Formulário' : 'WhatsApp'}</span>
+         <span class="o-st">${o.ativa ? 'ativa' : 'pausada'}</span>
+         <span class="o-num">${n0(o.leads)} ${o.objetivo === 'form'
+           ? (o.leads === 1 ? 'formulário' : 'formulários')
+           : (o.leads === 1 ? 'conversa' : 'conversas')} · ${brl0(o.spend)}${
+           o.cpl != null ? ` · <b>${brl(o.cpl)}</b> cada` : ''}</span></li>`).join('');
     return `<article class="u ${esc(c.status)}">
       <div class="u-top">
         <div class="u-quem">
@@ -845,8 +883,9 @@ function pintaGrade() {
             <div class="u-chips">
               ${mute ? '' : `<span class="chip ${esc(c.status)}">${ROT[c.status] || ''}</span>`}
               ${c.praca ? `<span class="chip" title="${esc(c.pracas)}">${esc(c.praca)}</span>` : ''}
-              ${c.tipoLead && c.tipoLead !== 'whats'
-                ? `<span class="chip tipo">${c.tipoLead === 'form' ? 'formulário' : 'whats + formulário'}</span>` : ''}
+              ${c.objetivo
+                ? `<span class="chip obj ${form ? 'form' : 'whats'}"
+                     title="${esc(c.campanha ? c.campanha.nome : '')}">${form ? 'formulário' : 'whatsapp'}</span>` : ''}
               ${c.estreia && !cedo ? '<span class="chip novo">estreou</span>' : ''}
             </div>
           </div>
@@ -856,20 +895,23 @@ function pintaGrade() {
       <div class="u-cpr">
         <span class="n">${espera ? 'ainda sem campanha' : parado ? 'campanha pausada'
           : cedo ? 'começando' : mute ? 'sem lead' : brl(c.cpl)}</span>
-        ${c.ant && !cedo && !parado ? varHTML(c.cpl, c.ant.cpl, true) : ''}
+        ${compara && !cedo && !parado ? varHTML(c.cpl, c.ant.cpl, true) : ''}
         <span class="l">${espera ? 'entra no painel assim que a campanha subir'
           : parado ? 'sem entrega nesta janela'
           : cedo ? 'ainda sem lead — investimento pequeno demais para medir'
-          : mute ? 'nenhum lead registrado no período' : 'por lead'}</span>
+          : mute ? 'nenhum lead registrado no período'
+          : form ? 'por formulário preenchido' : 'por conversa no WhatsApp'}</span>
       </div>
       ${semNumero || cedo ? '' : reguaHTML(c.cpl)}
       ${semNumero ? '' : `<div class="u-linha2">
-        <div class="met"><span class="rot">Leads</span>
-          <span class="val"><b>${n0(c.leads)}</b>${c.ant ? varHTML(c.leads, c.ant.leads, false) : ''}</span></div>
+        <div class="met"><span class="rot">${form ? 'Formulários' : 'Conversas'}</span>
+          <span class="val"><b>${n0(c.leads)}</b>${compara ? varHTML(c.leads, c.ant.leads, false) : ''}</span></div>
         <div class="met"><span class="rot">Investido</span>
-          <span class="val"><b>${brl0(c.spend)}</b>${c.ant ? varHTML(c.spend, c.ant.spend, false) : ''}</span></div>
+          <span class="val"><b>${brl0(c.spend)}</b>${compara ? varHTML(c.spend, c.ant.spend, false) : ''}</span></div>
       </div>`}
       <div class="u-frase">${frase}</div>
+      ${outras ? `<div class="u-outras"><div class="u-outras-t">Outra campanha no período</div>
+        <ul>${outras}</ul></div>` : ''}
       ${nota ? `<div class="u-ant">${esc(nota)}</div>` : ''}
     </article>`;
   }).join('');
@@ -941,7 +983,9 @@ function pintaCriativos() {
         ${x.dono ? `<div class="cr-dono">de <b>${esc(x.dono)}</b></div>` : ''}
         ${destaque ? '<div class="cr-tag">lead barato</div>' : ''}
         <div class="cr-mets">
-          <span><b>${n0(x.leads)}</b>lead${x.leads===1?'':'s'}</span>
+          <span><b>${n0(x.leads)}</b>${x.objetivo === 'form'
+            ? (x.leads === 1 ? 'formulário' : 'formulários')
+            : (x.leads === 1 ? 'conversa' : 'conversas')}</span>
           <span><b>${x.cpl != null ? brl(x.cpl) : '—'}</b>cada</span>
           <span><b>${brl0(x.spend)}</b>investido</span>
           <span><b>${pct1(x.ctr)}</b>tocaram</span>
@@ -991,6 +1035,19 @@ function escala(maxValor, folga = 1.12) {
   const tk = ticks(maxValor * folga);
   return { tk, max: Math.max(tk[tk.length - 1] || 1, maxValor * 1.04) };
 }
+// Nome de corretor ancorado à direita na margem esquerda. Se não couber, o SVG
+// corta o COMEÇO — "Eduardo Serrano" perdia 9 px no celular. Mede depois de
+// desenhar (o svg já está no documento) e, se passar da margem, fica o primeiro
+// nome, que é como o time chama todo mundo.
+function nomeNaMargem(svg, x, y, nome, attrs) {
+  const t = tx(x, y, nome, attrs);
+  svg.appendChild(t);
+  try {
+    if (t.getComputedTextLength() > x - 2) t.textContent = String(nome).split(' ')[0];
+  } catch (e) { /* sem layout (impressão, teste sem render): fica o nome inteiro */ }
+  return t;
+}
+
 function novoPlot(host, W, H, aria) {
   host.innerHTML = '';
   const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, role:'img', 'aria-label':aria });
@@ -1062,8 +1119,11 @@ function grafMeses(host, W) {
 /* ---- 2. participação: verba × leads ---- */
 function grafParticipacao(host, W) {
   const totS = D.rede.spend || 0, totL = D.rede.leads || 0;
-  const dd = D.corretores.map(c => ({ nome:c.nome, spend:c.spend, leadsN:c.leads,
-      verba: totS ? c.spend / totS * 100 : 0, leads: totL ? c.leads / totL * 100 : 0 }))
+  // `total`, não a principal: este gráfico é sobre para onde foi o dinheiro, e a
+  // campanha pausada no meio da janela também gastou — sem ela as fatias não
+  // fechariam 100% do placar
+  const dd = D.corretores.map(c => ({ nome:c.nome, spend:c.total.spend, leadsN:c.total.leads,
+      verba: totS ? c.total.spend / totS * 100 : 0, leads: totL ? c.total.leads / totL * 100 : 0 }))
     .sort((a,b) => (b.leads - b.verba) - (a.leads - a.verba));
   if (!dd.length) return;
 
@@ -1082,8 +1142,8 @@ function grafParticipacao(host, W) {
 
   dd.forEach((d,i) => {
     const y = PADT + i*linhaH, meio = y + linhaH/2;
-    svg.appendChild(tx(PADL-11, meio+3.5, d.nome,
-      { 'text-anchor':'end', fill:C.tinta, 'font-size':12, 'font-weight':700 }));
+    nomeNaMargem(svg, PADL-11, meio+3.5, d.nome,
+      { 'text-anchor':'end', fill:C.tinta, 'font-size':12, 'font-weight':700 });
     const yV = meio - barH - vao/2, yL = meio + vao/2;
     svg.appendChild(el('rect', { x:PADL, y:yV, width:Math.max(1, X(d.verba)-PADL),
       height:barH, rx:4, ry:4, fill:C.verba }));
@@ -1097,61 +1157,80 @@ function grafParticipacao(host, W) {
 }
 
 /* ---- 3. taxa de clique que vira conversa ---- */
-/* A fatia que vira conversa é pequena. Desenhada dentro da barra de cliques ela
+/* A fatia que vira lead é pequena. Desenhada dentro da barra de cliques ela
    vira um fio invisível e o gráfico passa a depender do número escrito ao lado.
-   Plotando a taxa em si, a barra volta a carregar a informação. */
+   Plotando a taxa em si, a barra volta a carregar a informação.
+   Desde nov/2026 há dois tipos de campanha, e "conversa aberta" e "formulário
+   preenchido" não se comparam: cada tipo vira um GRUPO, com cabeçalho próprio e
+   média própria. A média só aparece com 3 corretores ou mais no grupo — a mesma
+   régua da leitura automática; com 2, "acima da média" seria comparar com 1. */
 function grafFunil(host, W) {
-  const dd = D.corretores.map(c => ({ nome:c.nome, cliques:c.cliques, leads:c.leads,
-      taxa: c.taxaConversa || 0 }))
-    .sort((a,b) => b.taxa - a.taxa);
-  if (!dd.length) return;
+  const GRUPOS = [
+    { obj:'whats', titulo:'WhatsApp · conversa aberta',     unid:'conversas' },
+    { obj:'form',  titulo:'Formulário · formulário preenchido', unid:'formulários' }
+  ].map(g => {
+    const cs = D.corretores.filter(c => c.objetivo === g.obj && c.cliques > 0)
+      .map(c => ({ nome:c.nome, cliques:c.cliques, leads:c.leads, taxa: c.taxaConversa || 0 }))
+      .sort((a,b) => b.taxa - a.taxa);
+    const l = cs.reduce((t, d) => t + d.leads, 0), k = cs.reduce((t, d) => t + d.cliques, 0);
+    return { ...g, cs, media: cs.length >= 3 && k > 0 ? l / k * 100 : 0 };
+  }).filter(g => g.cs.length);
+  if (!GRUPOS.length) return;
 
-  const PADL = Math.min(150, Math.max(104, W*0.16)), PADR = 152, PADT = 8, PADB = 30;
-  const linhaH = 48, barH = 20;
-  const H = PADT + dd.length*linhaH + PADB, IW = W - PADL - PADR;
-  const { tk, max } = escala(Math.max(1, ...dd.map(d => d.taxa)));
+  const PADL = Math.min(150, Math.max(104, W*0.16)), PADR = 152, PADT = 4, PADB = 30;
+  const linhaH = 48, barH = 20, cabH = 30;
+  const nLinhas = GRUPOS.reduce((t, g) => t + g.cs.length, 0);
+  const H = PADT + GRUPOS.length*cabH + nLinhas*linhaH + PADB, IW = W - PADL - PADR;
+  const todas = GRUPOS.flatMap(g => g.cs);
+  const { tk, max } = escala(Math.max(1, ...todas.map(d => d.taxa)));
   const X = v => PADL + (v/max) * IW;
-  const media = D.rede.cliques ? D.rede.leads / D.rede.cliques * 100 : 0;
-  const svg = novoPlot(host, W, H, 'Percentual de cliques que viraram conversa, por corretor');
+  const svg = novoPlot(host, W, H,
+    'Percentual de cliques que viraram lead, por corretor, separado por tipo de campanha');
 
-  // a etiqueta da média divide a faixa do eixo com os ticks: o tick perto demais
-  // some, senão os dois se sobrepõem e viram "0%média 7%" em tela estreita
-  const mediaX = media > 0 ? X(media) : null;
   tk.forEach(v => {
-    svg.appendChild(el('line', { x1:X(v), x2:X(v), y1:PADT, y2:PADT+dd.length*linhaH,
+    svg.appendChild(el('line', { x1:X(v), x2:X(v), y1:PADT, y2:H-PADB,
       stroke: v === 0 ? C.eixo : C.grade, 'stroke-width':1 }));
-    if (mediaX == null || Math.abs(X(v) - mediaX) > 34)
-      svg.appendChild(tx(X(v), H-11, v+'%', { 'text-anchor':'middle', fill:C.texto, 'font-size':10.5 }));
+    svg.appendChild(tx(X(v), H-11, v+'%', { 'text-anchor':'middle', fill:C.texto, 'font-size':10.5 }));
   });
 
-  // média da operação: a referência que diz quem está acima e quem está abaixo
-  if (media > 0) {
-    svg.appendChild(el('line', { x1:X(media), x2:X(media), y1:PADT, y2:PADT+dd.length*linhaH,
-      stroke:C.linha, 'stroke-width':1.5, 'stroke-dasharray':'4 3' }));
-    svg.appendChild(tx(X(media), H-11, 'média ' + media.toFixed(0) + '%',
-      { 'text-anchor':'middle', fill:C.linha, 'font-size':10.5, 'font-weight':700,
+  let y = PADT;
+  for (const g of GRUPOS) {
+    // Cabeçalho do grupo ancorado pela ESQUERDA, por cima da área do gráfico (a
+    // linha de cabeçalho não tem barra). Ancorado à direita na margem, como os
+    // nomes, o SVG cortava o começo: "Formulário" virava "rio". A média entra no
+    // próprio cabeçalho — rótulo solto ao lado da linha colidia com ele no celular.
+    svg.appendChild(tx(2, y+cabH-10,
+      g.titulo + (g.media > 0 ? ' · média ' + g.media.toFixed(0) + '%' : ''),
+      { 'text-anchor':'start', fill:C.linha, 'font-size':11, 'font-weight':700,
         stroke:'#fff', 'stroke-width':3.5, 'paint-order':'stroke' }));
+    const y0 = y + cabH, y1 = y0 + g.cs.length*linhaH;
+    if (g.media > 0)
+      svg.appendChild(el('line', { x1:X(g.media), x2:X(g.media), y1:y0, y2:y1,
+        stroke:C.linha, 'stroke-width':1.5, 'stroke-dasharray':'4 3' }));
+    g.cs.forEach((d, i) => {
+      const meio = y0 + i*linhaH + linhaH/2;
+      nomeNaMargem(svg, PADL-11, meio-1, d.nome,
+        { 'text-anchor':'end', fill:C.tinta, 'font-size':12, 'font-weight':700 });
+      // O rótulo é ancorado à direita em PADL-11: se não couber na margem, o SVG
+      // corta pela ESQUERDA e "87 cliques" vira "7 cliques" — número errado na tela.
+      // Por isso o limiar é a margem real disponível, não uma largura de tela fixa.
+      const margem = PADL - 11, LONGO = 120;
+      svg.appendChild(tx(margem, meio+13,
+        margem < LONGO ? n0(d.cliques) + ' cliques'
+                       : n0(d.cliques) + ' cliques · ' + n0(d.leads) + ' ' + g.unid,
+        { 'text-anchor':'end', fill:C.texto, 'font-size':10 }));
+      // sem média no grupo, a barra fica neutra: cor de "abaixo da média" seria
+      // um juízo que o gráfico não tem como fazer
+      const cor = !(g.media > 0) ? C.verba : d.taxa >= g.media ? C.ok : C.leads;
+      svg.appendChild(el('rect', { x:PADL, y:meio-barH/2, width:Math.max(2, X(d.taxa)-PADL),
+        height:barH, rx:5, ry:5, fill: cor }));
+      // halo branco: o rótulo pode cair em cima da linha tracejada da média
+      svg.appendChild(tx(X(d.taxa)+9, meio+6, d.taxa.toFixed(0) + ' de cada 100',
+        { fill:C.tinta, 'font-size':12, 'font-weight':700,
+          stroke:'#fff', 'stroke-width':3.5, 'paint-order':'stroke' }));
+    });
+    y = y1;
   }
-
-  dd.forEach((d,i) => {
-    const y = PADT + i*linhaH, meio = y + linhaH/2;
-    svg.appendChild(tx(PADL-11, meio-1, d.nome,
-      { 'text-anchor':'end', fill:C.tinta, 'font-size':12, 'font-weight':700 }));
-    // O rótulo é ancorado à direita em PADL-11: se não couber na margem, o SVG
-    // corta pela ESQUERDA e "87 cliques" vira "7 cliques" — número errado na tela.
-    // Por isso o limiar é a margem real disponível, não uma largura de tela fixa.
-    const margem = PADL - 11, LONGO = 120;
-    svg.appendChild(tx(margem, meio+13,
-      margem < LONGO ? n0(d.cliques) + ' cliques'
-                     : n0(d.cliques) + ' cliques · ' + n0(d.leads) + ' conversas',
-      { 'text-anchor':'end', fill:C.texto, 'font-size':10 }));
-    svg.appendChild(el('rect', { x:PADL, y:meio-barH/2, width:Math.max(2, X(d.taxa)-PADL),
-      height:barH, rx:5, ry:5, fill: media > 0 && d.taxa >= media ? C.ok : C.leads }));
-    // halo branco: o rótulo pode cair em cima da linha tracejada da média
-    svg.appendChild(tx(X(d.taxa)+9, meio+6, d.taxa.toFixed(0) + ' de cada 100',
-      { fill:C.tinta, 'font-size':12, 'font-weight':700,
-        stroke:'#fff', 'stroke-width':3.5, 'paint-order':'stroke' }));
-  });
 }
 
 // Medir DEPOIS que a página inteira existe: medir durante a montagem faz o
@@ -1233,7 +1312,10 @@ function ligaControles() {
   };
 
   document.getElementById('copiar').onclick = async () => {
-    const txt = `*Bridge Moinhos · painel de corretores*\n${D.periodo.titulo}\n\n` +
+    // as datas vão por extenso: "Últimos 14 dias" sozinho não deixa quem recebe
+    // conferir no Gerenciador — foi exatamente o desencontro de nov/2026
+    const txt = `*Bridge Moinhos · painel de corretores*\n${D.periodo.titulo} ` +
+      `(${dt(D.periodo.desde)} a ${dt(D.periodo.ate)})\n\n` +
       (D.leitura || []).map(l => '• ' + l).join('\n\n') +
       (D.aprofundar && D.aprofundar.length
         ? `\n\n*Vale aprofundar:*\n` + D.aprofundar.map(l => '→ ' + l).join('\n') : '');

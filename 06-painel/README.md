@@ -29,11 +29,17 @@ porque a operação não tem site nem landing page e a conversa com o corretor *
 Em novembro entraram campanhas `[Leads Forms Nativo]` com formulário qualificatório do
 Meta, que geram `leadgen.other`.
 
-O painel **soma as duas ações** (nenhum lead fica invisível) e **guarda a divisão** em
-`leadsWhats`/`leadsForm`. O cartão rotula: a frase em português diz "viraram conversa no
-WhatsApp" ou "preencheram o formulário", e uma tag laranja aparece quando o corretor
-foge do padrão da conta. A leitura automática avisa quando o tipo mudou entre os dois
-períodos, porque aí a variação de custo por lead compara unidades diferentes.
+**A unidade do painel é a campanha, como no Gerenciador.** Cada campanha conta só o
+resultado do próprio objetivo (formulário ou conversa) e o cartão mostra a campanha
+principal do corretor — número por número igual à linha dela lá. Se o corretor teve
+outra campanha com entrega na janela (a antiga, pausada na troca), ela aparece embaixo,
+com os próprios números. Todo cartão diz o objetivo: tag "WhatsApp" ou "Formulário",
+"por conversa no WhatsApp" ou "por formulário preenchido" embaixo do custo, e a frase
+em português. O contrato tem a tabela completa.
+
+Até 11/11/2026 o painel somava as campanhas de um corretor num número só — funcionava
+com uma campanha de um tipo por corretor, e deixou de funcionar na troca: a Karoline
+aparecia a R$ 59,96, número que não existe em nenhuma linha do Gerenciador.
 
 > **Pendência de calibragem:** a régua 40/60 foi definida sobre a conversa de WhatsApp.
 > O formulário filtra antes de virar lead, então tende a custar mais e chegar mais

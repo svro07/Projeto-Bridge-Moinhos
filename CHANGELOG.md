@@ -57,6 +57,61 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
 - Corretores definidos: ...
 -->
 
+### [2026-11-11] A campanha vira a unidade do painel — os números passam a bater com o Gerenciador
+
+- **O que motivou:** filtrando o Gerenciador de 01/11 a 11/11, Karoline e Adriano
+  não batiam com o painel. A API devolvia os números certos, centavo por centavo; o
+  erro estava no que o painel fazia com eles.
+- **Duas causas, confirmadas com número antes da correção:**
+  1. **O painel somava as campanhas do corretor num número só.** A Karoline aparecia
+     a R$ 59,96 com 6 leads — soma da campanha de formulário (3 a R$ 92,24) com a de
+     WhatsApp pausada (3 a R$ 27,68). Um custo que não existe em nenhuma linha do
+     Gerenciador. A decisão de somar e "rotular o tipo", tomada na entrega anterior
+     no mesmo dia, foi a errada para quem confere contra o Gerenciador.
+  2. **Janelas diferentes.** "Últimos 14 dias" do painel termina ontem (28/10 a
+     10/11); o filtro do print ia de 01/11 até hoje. O Adriano batia na mesma janela
+     e não batia na padrão, que pegava o fim da campanha de WhatsApp dele.
+- **Agora:** cada campanha conta só o resultado do próprio objetivo (a coluna
+  "Resultados" do Gerenciador) e o cartão mostra a **campanha principal** do corretor
+  — a ativa que mais investiu. As demais com entrega na janela aparecem embaixo, cada
+  uma com os próprios números. O total da operação continua somando todas. Todo
+  cartão diz o objetivo, e a seção dos cartões diz as datas por extenso com a
+  instrução de filtrar as mesmas no Gerenciador.
+- **Status e objetivo de cada campanha** passam a vir de `/campaigns` (a chamada de
+  insights não traz nenhum dos dois). Se falhar, vale a convenção de nome.
+- **Não somar as duas ações numa campanha de formulário:** quem preenche e depois
+  abre a conversa valeria dois leads. A série mensal da conta passou a ser montada
+  por campanha pelo mesmo motivo.
+- **Três regras da leitura que a revisão pegou contrariando o que foi combinado:**
+  - o "destaque" comparava contra base de 1 lead (a Susi virou destaque com 7 contra
+    1) — agora os dois períodos precisam de volume;
+  - a média de conversão misturava taxa de conversa com taxa de formulário — agora
+    compara só o mesmo objetivo, com no mínimo 3 campanhas no grupo;
+  - o aviso de troca de campanha vinha no fim da fila e era o primeiro cortado pelo
+    limite de 8 linhas — subiu para logo depois da abertura, e quem ficou sem
+    entrega virou uma frase só (cada pausado ocupava uma vaga).
+- **Setas do cartão** só com mesmo objetivo e volume no período anterior: Adriano e
+  Susi mostravam "▲450%" e "▲600%" porque as campanhas nasceram 3 dias antes do fim
+  da janela anterior. Crescimento de calendário, não de desempenho.
+- **Gráficos de "Leitura visual", que a mudança de unidade deixaria errados:**
+  - "Onde foi a verba" passou a usar o total do corretor (todas as campanhas). Com
+    a principal só, as fatias somariam 96,3% do placar e a campanha pausada da
+    Karoline sumiria do gráfico.
+  - "De cada 100 cliques" separava nada: punha taxa de formulário e taxa de
+    conversa na mesma régua, contra uma média que misturava as duas, com título
+    dizendo "conversa no WhatsApp" para todo mundo. Agora são dois grupos, cada um
+    com cabeçalho e média própria — média só com 3 corretores ou mais no grupo, a
+    mesma régua da leitura. Grupo sem média fica com barra neutra, sem juízo.
+  - Nomes longos eram cortados no começo, no celular ("Eduardo Serrano" perdia 9 px,
+    desde out/2026). O nome agora se mede depois de desenhado e, se não couber,
+    fica o primeiro nome. Conferido por medição em 360, 390, 768 e 1280 px.
+- **O resumo para WhatsApp** leva as datas por extenso, não só "Últimos 14 dias" —
+  quem recebe precisa conseguir conferir no Gerenciador.
+- **Conferido** com os números reais de 01/11–11/11: os oito cartões batem com o
+  print do Gerenciador (diferenças de centavos são do horário da leitura — com hoje
+  no intervalo, o Meta segue atualizando), e o total da operação fecha em R$ 2.232,86
+  e 67 leads, igual à soma das linhas de lá. 20 testes, incluindo esses números.
+
 ### [2026-11-11] Campanhas de formulário: o painel passa a ter dois tipos de lead
 
 - **O que mudou na operação:** Karoline e Adriano migraram de campanha de

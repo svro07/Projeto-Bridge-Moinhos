@@ -36,7 +36,9 @@ Cabeçalho: x-codigo  (ou ?c= para <img>)                      gate de acesso
     "spend": 1645.24, "leads": 67, "cpl": 24.56,
     "impr": 50548, "cliques": 976, "ctr": 1.93, "cpm": 32.55,
     "ant": { "spend": 404.55, "leads": 10, "cpl": 40.46 },   // ou null
-    "faixas": { "ok": 3, "warn": 0, "bad": 0, "mute": 0, "espera": 3 }
+    "faixas": { "ok": 3, "warn": 0, "bad": 0, "mute": 0, "cedo": 0, "parado": 1, "espera": 0 }
+    // spend/leads da rede somam TODAS as campanhas de cada corretor (`total`),
+    // não só a principal: a campanha pausada no meio da janela também gastou
   },
 
   "corretores": [ {
@@ -46,19 +48,30 @@ Cabeçalho: x-codigo  (ou ?c= para <img>)                      gate de acesso
                                        // que atende junta traz dois e divide um cartão
     "praca": "Bela Vista",             // chip curto
     "pracas": "Bela Vista · Country Club · Sync",   // title do chip
+    // TODOS os números abaixo são da CAMPANHA PRINCIPAL do corretor — iguais,
+    // número por número, à linha dela no Gerenciador
     "spend": 315.95, "leads": 19, "cpl": 16.63,     // cpl null quando leads = 0
     "impr": 8204, "reach": 4160, "freq": 1.97, "ctr": 3.07, "cpm": 38.51,
     "cliques": 252,                    // round(impr * ctr / 100) — cliques todos
     "taxaConversa": 7.5,               // leads / cliques * 100; 0 quando cliques = 0
     "status": "ok" | "warn" | "bad" | "mute" | "cedo" | "parado" | "espera",
-    "tipoLead": "whats" | "form" | "misto" | null,
-    "leadsWhats": 10, "leadsForm": 1,
+    "objetivo": "whats" | "form" | null,            // da campanha principal
+    "campanha": { "id": "…", "nome": "[ENGAJAMENTO] [Fittipaldi] Whats",
+                  "objetivo": "whats", "ativa": true, "spend": 315.95,
+                  "leads": 19, "cpl": 16.63 },      // ou null (sem entrega)
+    "outras": [ /* mesmas chaves de "campanha": as outras campanhas do corretor
+                   com entrega na janela — tipicamente a antiga, pausada na troca */ ],
+    "total": { "spend": 399, "leads": 22, "impr": 9500, "cliques": 300 },
+    "mudouObjetivo": false,            // principal de agora ≠ objetivo da anterior
+    "comparavel": true,                // setas do cartão: mesmo objetivo E
+                                       // ant.leads >= T.ruidoLeads
     //   mute   = a campanha entregou, gastou e ninguém abriu conversa (alarme)
     //   espera = não há campanha entregando no período; corretor novo cujo
     //            anúncio ainda não subiu no Gerenciador (neutro, não é alarme)
     "estreia": false,                  // entregou agora e não existia no período anterior
                                        // (nunca true para quem está em "espera")
-    "ant": { "spend": 329.14, "leads": 8, "cpl": 41.14 }    // ou null
+    "ant": { "spend": 329.14, "leads": 8, "cpl": 41.14,     // principal do período
+             "objetivo": "whats", "total": { … } }               // anterior; ou null
   } ],
 
   "meses": [                           // CONTA INTEIRA, inclusive corretores que saíram:
@@ -68,8 +81,9 @@ Cabeçalho: x-codigo  (ou ?c= para <img>)                      gate de acesso
                                        // os que saíram concentram R$ 10.244 de R$ 12.492
 
   "criativos": {                       // por corretor, ordenado por leads desc, spend desc
-    "fittipaldi": [ { "adId": "…", "nome": "IMG - …", "spend": 41.73,
-                      "impr": 1140, "ctr": 7.37, "leads": 5, "cpl": 8.35 } ]
+    "fittipaldi": [ { "adId": "…", "nome": "IMG - …", "objetivo": "whats",
+                      "spend": 41.73, "impr": 1140, "ctr": 7.37, "leads": 5, "cpl": 8.35 } ]
+    // o anúncio herda o objetivo da campanha, e `leads` é o resultado DELE
   },
 
   "leitura": [ "frase 1 (a mais importante)", "..." ],
@@ -115,6 +129,35 @@ Campanha da conta que não casa com o roster: fora dos cartões e dos agregados
 (`rede`, `criativos`) — mas DENTRO de `meses`. Corretor do roster sem entrega no
 período: entra com zeros e `status: "mute"` (o cartão precisa dizer que ele sumiu,
 não fingir que ele não existe).
+
+## Campanha, objetivo e resultado
+
+A unidade do painel é a **campanha**, como no Gerenciador. Desde nov/2026 a conta
+tem dois objetivos, e cada campanha conta **só a ação do próprio objetivo** — é a
+coluna "Resultados" de lá:
+
+| objetivo | como o Meta chama | resultado (ação) | o cartão diz |
+|---|---|---|---|
+| `whats` | `OUTCOME_ENGAGEMENT` · `[ENGAJAMENTO] [Nome] Whats` | `onsite_conversion.messaging_conversation_started_7d` | "por conversa no WhatsApp" |
+| `form` | `OUTCOME_LEADS` · `[Leads Forms Nativo] [Nome] Whats` | `leadgen.other` | "por formulário preenchido" |
+
+O objetivo vem de `GET /act_{conta}/campaigns?fields=objective,effective_status`
+(`campanhasDaConta`), buscado junto com os insights. Se a chamada falhar, vale a
+convenção de nome — e, em último caso, a ação que a campanha registrou.
+
+**Somar as duas ações numa campanha de formulário estaria errado:** quem preenche
+o formulário pode abrir a conversa em seguida, e valeria dois leads.
+
+**Campanha principal** = a ativa que mais investiu na janela; sem ativa, a que mais
+investiu. O cartão mostra a principal; as demais com entrega na janela aparecem em
+`outras`, cada uma com os próprios números. Antes disto o painel somava as campanhas
+do corretor num número só, e a Karoline aparecia a R$ 59,96 com 6 leads — um número
+que não existe no Gerenciador (lá: formulário 3 a R$ 92,24; WhatsApp pausada 3 a
+R$ 27,68).
+
+**Para conferir com o Gerenciador**, a janela precisa ser a mesma. "Últimos 14 dias"
+termina ontem (o dia corrente está incompleto); o seletor de datas aceita incluir
+hoje. A seção dos cartões diz as datas por extenso logo acima deles.
 
 ## Régua e status
 

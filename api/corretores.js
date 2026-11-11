@@ -68,17 +68,21 @@ module.exports = async (req, res) => {
     if (!q.get('fresh') && quente && Date.now() - quente.em < CACHE_MIN * 60_000)
       return res.end(JSON.stringify(quente.pacote));
 
-    // quatro chamadas em paralelo: período, comparação, criativos e série
-    // mensal. Criativos e série não derrubam o painel se falharem sozinhos.
-    const [linhas, linhasAnt, criativos, serieMensal] = await Promise.all([
+    // cinco chamadas em paralelo: período, comparação, criativos, série mensal
+    // e o status/objetivo de cada campanha. Só as duas primeiras derrubam o
+    // painel: sem o status, a campanha principal cai na que mais investiu e o
+    // objetivo sai da convenção de nome — o painel fica um pouco menos preciso,
+    // mas não mente.
+    const [linhas, linhasAnt, criativos, serieMensal, campanhas] = await Promise.all([
       corretores.insights(periodo.desde, periodo.ate),
       corretores.insights(anterior.desde, anterior.ate),
       corretores.insightsCriativos(periodo.desde, periodo.ate).catch(() => []),
-      corretores.serieMensal(periodo.ate).catch(() => [])
+      corretores.serieMensal(periodo.ate).catch(() => []),
+      corretores.campanhasDaConta().catch(() => null)
     ]);
 
     const pacote = corretores.monta(linhas, linhasAnt, {
-      modo: 'ao-vivo', geradoEm: hoje, periodo, anterior, criativos, serieMensal
+      modo: 'ao-vivo', geradoEm: hoje, periodo, anterior, criativos, serieMensal, campanhas
     });
     pacote.prontos = prontos.map(p => ({ id: p.id, botao: p.botao }));
 
