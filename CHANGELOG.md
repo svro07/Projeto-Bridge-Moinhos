@@ -81,6 +81,12 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
   passou a dizer "ainda sem campanha", como se fosse novato — `espera` estava
   cobrindo dois casos opostos. `parado` é quem já rodou e parou; a frase diz
   que os números voltam sozinhos quando a campanha for reativada.
+- **`jaRodou` no roster (mesmo dia, depois de confirmado que a pausa do Birk é
+  temporária):** `parado` dependia só da janela anterior, então uma pausa de mais
+  de 28 dias zerava as duas janelas consultadas e o cartão voltava a dizer "ainda
+  sem campanha" — a mesma mentira, 28 dias depois. A marca fica no roster, que é
+  a memória explícita do projeto; quem entra antes da primeira campanha entra sem
+  ela.
 - **`exceto` no roster.** A campanha de formulário da Karoline subiu como
   `[Leads Forms Nativo] [Karoline]`, o que obrigou a usar a chave curta
   `[karoline]` — justamente a que foi evitada em out/2026 por casar com a

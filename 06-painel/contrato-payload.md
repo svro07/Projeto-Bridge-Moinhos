@@ -124,7 +124,7 @@ não fingir que ele não existe).
 | status | condição | o que o cartão diz |
 |---|---|---|
 | `espera` | sem entrega e sem histórico | "ainda sem campanha" — entrou no projeto, campanha não subiu |
-| `parado` | sem entrega, COM histórico | "campanha pausada" — já rodou e parou, não é novato |
+| `parado` | sem entrega, mas já rodou | "campanha pausada" — já rodou e parou, não é novato |
 | `cedo` | leads = 0 e spend < régua verde | "começando" — gastou menos que um lead saudável; zero lead ainda é o esperado |
 | `mute` | leads = 0 (gastou acima da régua verde) | "sem lead" — gastou de verdade e ninguém abriu conversa |
 | `ok` / `warn` / `bad` | cpl < verde / < amarelo / ≥ amarelo | o CPL, na cor da régua |
@@ -132,7 +132,13 @@ não fingir que ele não existe).
 `espera`, `parado`, `cedo` e `mute` parecem iguais no dado (zero lead) e são quatro
 coisas diferentes na leitura: não começou, começou e parou, mal começou, e começou e
 não funcionou. Sem `parado`, um veterano com a campanha pausada era descrito como
-"ainda sem campanha" — que foi o que aconteceu com o Rafael Birk em nov/2026. Sem
+"ainda sem campanha" — que foi o que aconteceu com o Rafael Birk em nov/2026.
+
+"Já rodou" vem de `!!ant` **ou** do `jaRodou` do roster. Só o período anterior não
+basta: uma pausa de mais de 28 dias zera as duas janelas que o painel consulta e o
+veterano voltaria a `espera`. `jaRodou` marca, no roster, quem já teve campanha no ar
+alguma vez; quem entra antes da primeira campanha entra sem a marca e ganha a marca
+quando ela subir. Coberto por teste nos dois sentidos. Sem
 essa separação o painel acusa de caro quem subiu ontem — que foi o que aconteceu
 com o Eduardo Serrano, no ar havia um dia com R$ 6,30 gastos. `cedo` conta como
 "no ar" no placar; `espera` não. O limite de `cedo` sai da própria régua verde:

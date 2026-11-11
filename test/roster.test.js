@@ -124,3 +124,37 @@ test('toda foto declarada no roster existe nas duas pastas de assets', () => {
         assert.ok(fs.existsSync(path.join(pasta, f)),
           `${c.nome}: ${f} não existe em ${path.basename(path.dirname(pasta))}/${path.basename(pasta)}`);
 });
+
+// Uma pausa longa zera as DUAS janelas que o painel consulta. Sem `jaRodou`, o
+// cartão do veterano voltava a dizer "ainda sem campanha" — a mesma mentira que
+// o status `parado` existe para evitar, só que 28 dias depois.
+test('veterano com campanha pausada fica em "parado", não em "espera"', () => {
+  const { monta, CONVERSA } = require('../lib/corretores.js');
+  const linha = (nome, spend, leads) => ({
+    campaign_id: 'x', campaign_name: nome, spend, impressions: 1000, reach: 800,
+    frequency: 1.2, ctr: 2, cpm: 30, clicks: 20,
+    actions: leads > 0 ? [{ action_type: CONVERSA, value: String(leads) }] : [] });
+  const ctx = { modo: 't', geradoEm: '2026-11-11',
+    periodo: { id: '14d', desde: '2026-10-28', ate: '2026-11-10', dias: 14 },
+    anterior: { desde: '2026-10-14', ate: '2026-10-27', dias: 14, modo: 'auto' },
+    criativos: [], serieMensal: [] };
+  const atual = [linha('[ENGAJAMENTO] [Fittipaldi] Whats', 400, 20)];
+  const statusDe = (id, ant) => monta(atual, ant, ctx).corretores.find(c => c.id === id).status;
+
+  assert.strictEqual(statusDe('birk', [linha('[ENGAJAMENTO] [Rafael Birk] Whats', 560, 24)]),
+    'parado', 'pausa curta');
+  assert.strictEqual(statusDe('birk', []), 'parado',
+    'pausa longa: as duas janelas zeradas não podem transformar veterano em novato');
+});
+
+// O outro lado da mesma moeda: quem entra no roster antes de ter campanha
+// precisa continuar caindo em "espera", senão a marca vira carimbo automático.
+test('quem nunca teve campanha fica em "espera"', () => {
+  const { corretorDaCampanha, ROSTER } = require('../lib/corretores.js');
+  const novato = { id: 'novato', nome: 'Novato', casa: ['[novato]'], fotos: [],
+                   praca: '', pracas: '' };
+  assert.ok(!novato.jaRodou, 'entrada nova não nasce com jaRodou');
+  assert.ok(ROSTER.every(c => c.jaRodou),
+    'todos do roster atual já rodaram — se alguém entrar sem campanha, esta linha muda');
+  assert.strictEqual(corretorDaCampanha('[ENGAJAMENTO] [Novato] Whats'), null);
+});
