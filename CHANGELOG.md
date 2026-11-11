@@ -57,6 +57,40 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
 - Corretores definidos: ...
 -->
 
+### [2026-11-11] Campanhas de formulário: o painel passa a ter dois tipos de lead
+
+- **O que mudou na operação:** Karoline e Adriano migraram de campanha de
+  ENGAJAMENTO (conversa no WhatsApp) para `[Leads Forms Nativo]`, com formulário
+  qualificatório do Meta. Úrsula e Bianca devem seguir. A ação no Meta é outra
+  (`leadgen.other`, não `onsite_conversion.messaging_conversation_started_7d`),
+  então o painel **contava zero lead** para quem migrou.
+- **Decisão:** somar as duas ações e **guardar a divisão** (`leadsWhats`,
+  `leadsForm`, `tipoLead`). Nenhum lead fica invisível, e nada é misturado em
+  silêncio: a frase do cartão diz de que tipo foi ("viraram conversa no
+  WhatsApp" / "preencheram o formulário"), uma tag aparece para quem foge do
+  padrão da conta, e a leitura avisa quando o tipo mudou entre os períodos —
+  porque aí a variação de CPL compara unidades diferentes.
+- **Calibragem pendente, consciente:** a régua 40/60 foi definida sobre a
+  conversa de WhatsApp. O formulário filtra antes e tende a custar mais caro e
+  chegar mais qualificado. Enquanto não houver volume, as duas usam a mesma
+  régua. Anotado aqui para não virar esquecimento.
+- **Susi entrou com a grafia errada em out/2026.** O roster tinha `[suzy]`,
+  `[suzi]`, `[susy]` — três palpites — e o Gerenciador escreveu `[Susi]`. A
+  campanha dela ficou fora do painel. Agora casa, com as quatro grafias.
+- **Novo status `parado`.** Rafael Birk teve a campanha pausada e o cartão dele
+  passou a dizer "ainda sem campanha", como se fosse novato — `espera` estava
+  cobrindo dois casos opostos. `parado` é quem já rodou e parou; a frase diz
+  que os números voltam sozinhos quando a campanha for reativada.
+- **`exceto` no roster.** A campanha de formulário da Karoline subiu como
+  `[Leads Forms Nativo] [Karoline]`, o que obrigou a usar a chave curta
+  `[karoline]` — justamente a que foi evitada em out/2026 por casar com a
+  passagem de jun–ago. Agora as duas de hoje casam pelo nome e a de junho é
+  excluída pelo id. Coberto por teste, inclusive um que confere que todo id de
+  `exceto` realmente exclui alguma coisa.
+- **Praças lidas dos anúncios:** Úrsula (Petrópolis), Bianca (Moinhos de Vento),
+  Susi (Bela Vista), e Karoline e Adriano atualizados para os empreendimentos
+  das campanhas novas.
+
 ### [2026-10-19] Rotação de out/2026: saem quatro, entram quatro
 
 - **Saíram:** Flavia e Ismael (um cartão), Roseli e Jaqueline. As campanhas foram

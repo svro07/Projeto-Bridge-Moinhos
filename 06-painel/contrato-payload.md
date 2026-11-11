@@ -50,7 +50,9 @@ Cabeçalho: x-codigo  (ou ?c= para <img>)                      gate de acesso
     "impr": 8204, "reach": 4160, "freq": 1.97, "ctr": 3.07, "cpm": 38.51,
     "cliques": 252,                    // round(impr * ctr / 100) — cliques todos
     "taxaConversa": 7.5,               // leads / cliques * 100; 0 quando cliques = 0
-    "status": "ok" | "warn" | "bad" | "mute" | "cedo" | "espera",
+    "status": "ok" | "warn" | "bad" | "mute" | "cedo" | "parado" | "espera",
+    "tipoLead": "whats" | "form" | "misto" | null,
+    "leadsWhats": 10, "leadsForm": 1,
     //   mute   = a campanha entregou, gastou e ninguém abriu conversa (alarme)
     //   espera = não há campanha entregando no período; corretor novo cujo
     //            anúncio ainda não subiu no Gerenciador (neutro, não é alarme)
@@ -86,23 +88,25 @@ da campanha normalizado (minúsculas, sem acento):
 | `fittipaldi` | Fittipaldi | `[fittipaldi]` | fittipaldi.jpg |
 | `birk` | Rafael Birk | `[rafael birk]` | birk.jpg |
 | `adriano` | Adriano | `[adriano]` | adriano.jpg |
-| `karoline` | Karoline Aguiar | `[karoline aguiar]` | karoline.jpg |
+| `karoline` | Karoline Aguiar | `[karoline aguiar]`, `[karoline]` (menos o id `120246474830860135`) | karoline.jpg |
 | `eduardo` | Eduardo Serrano | `[eduardo serrano]`, `[eduardo]` | eduardo.jpg |
 | `bianca` | Bianca | `[bianca]` | bianca.jpg |
 | `ursula` | Úrsula | `[ursula]` | ursula.jpg |
-| `suzy` | Suzy | `[suzy]`, `[suzi]`, `[susy]` | _(sem retrato ainda)_ |
+| `susi` | Susi | `[susi]`, `[suzi]`, `[suzy]`, `[susy]` | susi.jpg |
 
 `casa` é LISTA de grafias, não texto: o nome no Gerenciador diverge do nome real
 (`[Roselil]` lá, "Roseli" aqui) e pode ser renomeado. Qualquer grafia prevista casa;
 nenhuma some em silêncio. Saíram do roster: **Sandra** (set/2026) e **Flavia e Ismael,
 Roseli e Jaqueline** (out/2026, campanhas pausadas entre 16 e 18/10).
 
-**Karoline Aguiar casa por `[karoline aguiar]`, nunca por `[karoline]`.** Ela já teve
-uma passagem pelo projeto (jun–ago/2026) e a campanha daquela época
-(`[ENGAJAMENTO] [Karoline] Whats`, pausada) continua na conta. Como o casamento é por
-`includes`, a chave curta pegaria as duas campanhas e somaria a passagem antiga ao
-cartão de agora em qualquer intervalo que alcançasse jun–ago. A campanha antiga segue
-contando só em `meses`, como as demais de quem saiu.
+**`exceto` é uma lista de ids de campanha que NÃO casam, mesmo que o nome case.**
+Existe por causa da Karoline: ela tem três campanhas com a grafia `[Karoline]` na conta
+— a passagem de jun–ago/2026 (pausada), a de ENGAJAMENTO de out e a de formulário de
+nov. As duas de agora precisam da chave curta `[karoline]`, porque a de formulário subiu
+como `[Leads Forms Nativo] [Karoline] Whats`; e aí só o id separa a de junho, que o nome
+não separa. Sem isso, a passagem antiga entraria no cartão em qualquer intervalo que
+alcançasse jun–ago. A campanha antiga segue contando só em `meses`, como as demais de
+quem saiu. `npm test` confere que cada id de `exceto` realmente exclui alguma coisa.
 
 `fotos` pode vir vazio (`[]`): corretor no ar antes de a foto chegar. O cartão desenha
 a silhueta neutra em vez de pedir um arquivo que não existe.
@@ -120,12 +124,15 @@ não fingir que ele não existe).
 | status | condição | o que o cartão diz |
 |---|---|---|
 | `espera` | sem entrega e sem histórico | "ainda sem campanha" — entrou no projeto, campanha não subiu |
+| `parado` | sem entrega, COM histórico | "campanha pausada" — já rodou e parou, não é novato |
 | `cedo` | leads = 0 e spend < régua verde | "começando" — gastou menos que um lead saudável; zero lead ainda é o esperado |
 | `mute` | leads = 0 (gastou acima da régua verde) | "sem lead" — gastou de verdade e ninguém abriu conversa |
 | `ok` / `warn` / `bad` | cpl < verde / < amarelo / ≥ amarelo | o CPL, na cor da régua |
 
-`espera`, `cedo` e `mute` parecem iguais no dado (zero lead) e são três coisas
-diferentes na leitura: não começou, mal começou, e começou e não funcionou. Sem
+`espera`, `parado`, `cedo` e `mute` parecem iguais no dado (zero lead) e são quatro
+coisas diferentes na leitura: não começou, começou e parou, mal começou, e começou e
+não funcionou. Sem `parado`, um veterano com a campanha pausada era descrito como
+"ainda sem campanha" — que foi o que aconteceu com o Rafael Birk em nov/2026. Sem
 essa separação o painel acusa de caro quem subiu ontem — que foi o que aconteceu
 com o Eduardo Serrano, no ar havia um dia com R$ 6,30 gastos. `cedo` conta como
 "no ar" no placar; `espera` não. O limite de `cedo` sai da própria régua verde:

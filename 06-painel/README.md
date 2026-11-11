@@ -23,18 +23,29 @@ pessoa. Cada campanha do Meta aponta para um corretor, e o projeto do Carlos é 
 escolher corretores que se destacam para receber o investimento — então o rosto no
 cartão não é enfeite, é o assunto.
 
-**Lead é a conversa iniciada no WhatsApp.** A métrica no Meta é
-`onsite_conversion.messaging_conversation_started_7d`. Como a operação não tem site
-nem landing page, a conversa aberta com o corretor *é* o lead — não há etapa entre uma
-coisa e outra. É a mesma métrica que o painel da Elite usa, o que tornou a réplica
-quase direta.
+**Lead tem DOIS significados nesta conta desde nov/2026.** Até lá era só um: a
+conversa iniciada no WhatsApp (`onsite_conversion.messaging_conversation_started_7d`),
+porque a operação não tem site nem landing page e a conversa com o corretor *é* o lead.
+Em novembro entraram campanhas `[Leads Forms Nativo]` com formulário qualificatório do
+Meta, que geram `leadgen.other`.
+
+O painel **soma as duas ações** (nenhum lead fica invisível) e **guarda a divisão** em
+`leadsWhats`/`leadsForm`. O cartão rotula: a frase em português diz "viraram conversa no
+WhatsApp" ou "preencheram o formulário", e uma tag laranja aparece quando o corretor
+foge do padrão da conta. A leitura automática avisa quando o tipo mudou entre os dois
+períodos, porque aí a variação de custo por lead compara unidades diferentes.
+
+> **Pendência de calibragem:** a régua 40/60 foi definida sobre a conversa de WhatsApp.
+> O formulário filtra antes de virar lead, então tende a custar mais e chegar mais
+> qualificado. Enquanto não houver volume para calibrar, as duas usam a mesma régua —
+> decisão consciente, anotada aqui para não virar esquecimento.
 
 **Régua de custo por lead:** verde até R$ 40, amarelo de R$ 40 a R$ 60, vermelho acima
 de R$ 60. O teto visual da barra é R$ 100, escolhido para caber o pior mês real da
 conta (maio/2026, R$ 85,68) sem cortar a barra.
 
 **Roster travado nos oito atuais** — Fittipaldi, Rafael Birk, Adriano, Karoline Aguiar,
-Eduardo Serrano, Bianca, Úrsula e Suzy. As campanhas pausadas (Camille, Ricardo Osorio,
+Eduardo Serrano, Bianca, Úrsula e Susi. As campanhas pausadas (Camille, Ricardo Osorio,
 Daniela Alban, Sandra, Flavia e Ismael, Roseli, Jaqueline) são de corretores que saíram
 do projeto e ficam fora dos cartões. Como o projeto prevê rotação, o roster mora no
 `ROSTER` de `lib/corretores.js` e é a única coisa que muda quando alguém entra ou sai.

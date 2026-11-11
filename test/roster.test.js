@@ -6,8 +6,8 @@ const { test } = require('node:test');
 const assert = require('node:assert');
 const { corretorDaCampanha, ROSTER } = require('../lib/corretores.js');
 
-const quem = nome => {
-  const c = corretorDaCampanha(nome);
+const quem = (nome, id) => {
+  const c = corretorDaCampanha(nome, id);
   return c && c.id;
 };
 
@@ -17,7 +17,13 @@ test('cada campanha no ar casa com o seu corretor', () => {
     '[ENGAJAMENTO] [Rafael Birk] Whats': 'birk',
     '[ENGAJAMENTO] [Adriano] Whats': 'adriano',
     '[ENGAJAMENTO] [Karoline Aguiar] Whats': 'karoline',
-    '[ENGAJAMENTO] [Eduardo Serrano] Whats': 'eduardo'
+    '[ENGAJAMENTO] [Eduardo Serrano] Whats': 'eduardo',
+    '[ENGAJAMENTO] [Bianca] Whats': 'bianca',
+    '[ENGAJAMENTO] [Ursula] Whats': 'ursula',
+    '[ENGAJAMENTO] [Susi] Whats': 'susi',
+    // campanhas de Leads com formulário, de nov/2026: outro prefixo, mesmo dono
+    '[Leads Forms Nativo] [Adriano] Whats': 'adriano',
+    '[Leads Forms Nativo] [Karoline] Whats': 'karoline'
   };
   for (const [campanha, id] of Object.entries(esperado))
     assert.strictEqual(quem(campanha), id, `"${campanha}" deveria casar com ${id}`);
@@ -26,10 +32,11 @@ test('cada campanha no ar casa com o seu corretor', () => {
 // Toda campanha que já existiu na conta e NÃO é de alguém do roster atual. É a
 // trava mais importante do arquivo: uma chave nova curta demais (o caso que
 // aconteceu com `[karoline]`) passa a casar com uma destas e o painel soma o
-// período de outra pessoa — ou de outra passagem — ao cartão, sem erro nenhum.
-// Quem entrar no roster daqui pra frente roda contra esta lista.
+// período de outra pessoa ao cartão, sem erro nenhum. Quem entrar no roster
+// daqui pra frente roda contra esta lista. A campanha de jun/2026 da Karoline
+// não está aqui porque o nome dela não a separa das de hoje: ela é excluída
+// pelo id, e tem teste próprio logo abaixo.
 const FORA_DO_ROSTER = [
-  '[ENGAJAMENTO] [Karoline] Whats',        // passagem antiga da Karoline (jun–ago/2026)
   '[ENGAJAMENTO] [Flavia/Ismael] Whats',   // saíram em out/2026
   '[ENGAJAMENTO] [Roselil] Whats',
   '[ENGAJAMENTO] [Jaqueline] Whats',
@@ -55,13 +62,34 @@ test('tolera espaço dentro do colchete e acento', () => {
   assert.strictEqual(quem('[ENGAJAMENTO] [Úrsula] Whats'), 'ursula');
 });
 
-// Quem entrou antes de a campanha subir: a chave tem que casar quando ela subir,
-// em qualquer das grafias previstas.
-test('as chaves de quem ainda não tem campanha casam quando ela subir', () => {
-  assert.strictEqual(quem('[ENGAJAMENTO] [Bianca] Whats'), 'bianca');
-  assert.strictEqual(quem('[ENGAJAMENTO] [Ursula] Whats'), 'ursula');
-  for (const g of ['[Suzy]', '[Suzi]', '[Susy]'])
-    assert.strictEqual(quem(`[ENGAJAMENTO] ${g} Whats`), 'suzy', `grafia ${g}`);
+// O Gerenciador escreveu "[Susi]". As quatro grafias ficam previstas porque o
+// nome apareceu escrito de outras formas no projeto — e porque, em out/2026, o
+// roster tinha só [suzy]/[suzi]/[susy] e a campanha dela ficou fora do painel.
+test('todas as grafias previstas de Susi casam com ela', () => {
+  for (const g of ['[Susi]', '[Suzi]', '[Suzy]', '[Susy]'])
+    assert.strictEqual(quem(`[ENGAJAMENTO] ${g} Whats`), 'susi', `grafia ${g}`);
+});
+
+// A chave curta `[karoline]` virou necessária quando a campanha de formulário
+// subiu como "[Leads Forms Nativo] [Karoline]". Com ela, só o id separa a
+// campanha de hoje da passagem de jun–ago, que tem exatamente a mesma grafia.
+test('a passagem antiga de Karoline é separada pelo id, não pelo nome', () => {
+  const ANTIGA = '120246474830860135';
+  assert.strictEqual(quem('[ENGAJAMENTO] [Karoline] Whats', ANTIGA), null,
+    'a campanha de jun/2026 não pode entrar no cartão de hoje');
+  assert.strictEqual(quem('[Leads Forms Nativo] [Karoline] Whats', '120249435838810135'), 'karoline');
+  assert.strictEqual(quem('[ENGAJAMENTO] [Karoline Aguiar] Whats', '120249016313560135'), 'karoline');
+});
+
+// Todo id em `exceto` tem que ser de uma campanha que, SEM a exclusão, casaria
+// com o corretor — senão é entrada morta que dá falsa sensação de proteção.
+test('cada exclusão do roster realmente exclui alguma coisa', () => {
+  for (const c of ROSTER)
+    for (const id of (c.exceto || [])) {
+      const semId = corretorDaCampanha('[ENGAJAMENTO] [Karoline] Whats');
+      assert.ok(semId, `exclusão ${id} de ${c.nome} não protege nada`);
+      assert.strictEqual(corretorDaCampanha('[ENGAJAMENTO] [Karoline] Whats', id), null);
+    }
 });
 
 test('nenhuma chave do roster casa com a campanha de outro corretor', () => {
