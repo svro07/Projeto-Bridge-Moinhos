@@ -7,10 +7,16 @@
 const { test } = require('node:test');
 const assert = require('node:assert');
 const { monta } = require('../lib/corretores.js');
-const { ACAO_CONVERSA: W, ACAO_FORM: F } = require('../lib/meta.js');
+const { ACAO_CONVERSA: W } = require('../lib/meta.js');
 
+// Formulário no FORMATO REAL da lista de ações do insights: o mesmo número em
+// `onsite_conversion.lead_grouped` e em `lead`, e nenhum `leadgen.other`. A
+// primeira versão destes testes montava `leadgen.other` — o mesmo palpite errado
+// do código — e passou enquanto o painel publicado mostrava Karoline e Adriano
+// com zero lead. Dado de teste tem que ter a cara da API, não a do código.
 const acoes = (w, f) => [].concat(w ? [{ action_type: W, value: String(w) }] : [],
-                                  f ? [{ action_type: F, value: String(f) }] : []);
+  f ? [{ action_type: 'onsite_conversion.lead_grouped', value: String(f) },
+       { action_type: 'lead', value: String(f) }] : []);
 // [id, nome, objective, status, spend, conversas, formulários]
 const CAMP = [
   ['120249435838810135', '[Leads Forms Nativo] [Karoline] Whats', 'OUTCOME_LEADS', 'ACTIVE', 276.73, 0, 3],
@@ -128,4 +134,20 @@ test('setas do cartão exigem mesmo objetivo e volume no período anterior', () 
   assert.strictEqual(cartao(d, 'susi').comparavel, false, 'base de 1 lead');
   assert.strictEqual(cartao(d, 'fittipaldi').comparavel, true);
   assert.strictEqual(cartao(d, 'karoline').comparavel, false, 'WhatsApp → formulário');
+});
+
+// O caso exato de 11/11/2026: formulário com os leads em `lead` e
+// `onsite_conversion.lead_grouped`. Tem que dar 11 — nem 0 (nome errado), nem 22
+// (os dois nomes somados, quando são os MESMOS leads).
+test('lead de formulário vem pelos nomes que a API realmente devolve', () => {
+  const { leadsForm } = require('../lib/meta.js');
+  assert.strictEqual(leadsForm([
+    { action_type: 'onsite_conversion.lead_grouped', value: '11' },
+    { action_type: 'lead', value: '11' },
+    { action_type: 'link_click', value: '176' }]), 11);
+  assert.strictEqual(leadsForm([{ action_type: 'lead', value: '3' }]), 3);
+  assert.strictEqual(leadsForm([{ action_type: 'leadgen.other', value: '3' }]), 3);
+  assert.strictEqual(leadsForm([{ action_type: 'link_click', value: '9' }]), 0);
+  const a = cartao(monta(linhas, [], ctx()), 'adriano');
+  assert.strictEqual(a.leads, 11, 'o cartão do Adriano não pode zerar');
 });

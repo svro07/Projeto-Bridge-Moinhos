@@ -139,7 +139,7 @@ coluna "Resultados" de lá:
 | objetivo | como o Meta chama | resultado (ação) | o cartão diz |
 |---|---|---|---|
 | `whats` | `OUTCOME_ENGAGEMENT` · `[ENGAJAMENTO] [Nome] Whats` | `onsite_conversion.messaging_conversation_started_7d` | "por conversa no WhatsApp" |
-| `form` | `OUTCOME_LEADS` · `[Leads Forms Nativo] [Nome] Whats` | `leadgen.other` | "por formulário preenchido" |
+| `form` | `OUTCOME_LEADS` · `[Leads Forms Nativo] [Nome] Whats` | o primeiro presente de `leadgen.other`, `onsite_conversion.lead_grouped`, `lead` (mesmos leads, nomes diferentes — nunca somar) | "por formulário preenchido" |
 
 O objetivo vem de `GET /act_{conta}/campaigns?fields=objective,effective_status`
 (`campanhasDaConta`), buscado junto com os insights. Se a chamada falhar, vale a

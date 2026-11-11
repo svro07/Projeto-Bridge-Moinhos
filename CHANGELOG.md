@@ -57,6 +57,20 @@ Reconstruído a partir do histórico de conversa original (`04-fontes/historico-
 - Corretores definidos: ...
 -->
 
+### [2026-11-11] Formulário zerado no painel publicado — nome da ação errado
+
+- **Sintoma:** filtrando novembro no painel publicado, Karoline e Adriano apareciam
+  com "sem lead" e o investimento certo (R$ 248 e R$ 303). No Gerenciador: 3 e 11.
+- **Causa:** o painel contava o lead de formulário pela ação `leadgen.other`, nome
+  tirado do "Resultado" do Gerenciador. A lista de ações que o insights devolve não
+  traz esse nome — traz os mesmos leads como `onsite_conversion.lead_grouped` e
+  `lead` (conferido: 3 e 11). Os testes passavam porque os dados de teste foram
+  montados com o mesmo palpite errado do código.
+- **Correção:** `leadsForm()` aceita os três nomes e usa o primeiro que vier — são
+  nomes diferentes para os mesmos leads, então nunca soma. Os dados de teste agora
+  têm o formato real da API, e um teste trava este caso: com o bug reintroduzido,
+  seis testes caem.
+
 ### [2026-11-11] A campanha vira a unidade do painel — os números passam a bater com o Gerenciador
 
 - **O que motivou:** filtrando o Gerenciador de 01/11 a 11/11, Karoline e Adriano
